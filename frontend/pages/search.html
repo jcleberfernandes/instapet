@@ -13,16 +13,7 @@
   <div class="layout">
     <main class="feed">
 
-      <form class="search-bar" id="search-form">
-        <input
-          class="search-bar__input"
-          id="search-input"
-          type="text"
-          placeholder="Pesquisar por tag... (ex: gato, cão)"
-          autocomplete="off"
-        >
-        <button class="search-bar__btn" type="submit">Pesquisar</button>
-      </form>
+      <search-bar id="search-bar-el" placeholder="Pesquisar por tag... (ex: gato, cão)"></search-bar>
 
       <div id="search-results">
         <p class="feed__status">Pesquisa algo para começar.</p>
@@ -49,20 +40,21 @@
     import '../webcomponent/layout/footer.js';
     import '../webcomponent/ui/button.js';
     import '../webcomponent/ui/postcard.js';
+    import '../webcomponent/search/search-bar/search-bar.js';
     import { getPosts } from '../services/posts.js';
 
-    const params = new URLSearchParams(window.location.search);
-    const searchInput = document.getElementById('search-input');
+    const params           = new URLSearchParams(window.location.search);
+    const searchBarEl      = document.getElementById('search-bar-el');
     const resultsContainer = document.getElementById('search-results');
 
     if (params.get('q')) {
-      searchInput.value = params.get('q');
+      const input = searchBarEl.querySelector('.search-bar__input');
+      if (input) input.value = params.get('q');
       runSearch(params.get('q'));
     }
 
-    document.getElementById('search-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const query = searchInput.value.trim();
+    document.addEventListener('search-submit', (e) => {
+      const query = e.detail.query;
       if (!query) return;
       history.pushState(null, '', `?q=${encodeURIComponent(query)}`);
       runSearch(query);
@@ -72,7 +64,8 @@
       const btn = e.target.closest('.tag-chip');
       if (!btn) return;
       const tag = btn.dataset.tag;
-      searchInput.value = tag;
+      const input = searchBarEl.querySelector('.search-bar__input');
+      if (input) input.value = tag;
       history.pushState(null, '', `?q=${encodeURIComponent(tag)}`);
       runSearch(tag);
     });
@@ -95,12 +88,12 @@
 
         posts.forEach((post) => {
           const card = document.createElement('post-card');
-          card.setAttribute('post-id', post.id);
+          card.setAttribute('post-id',  post.id);
           card.setAttribute('username', post.author_username ?? 'user');
-          card.setAttribute('avatar', `https://i.pravatar.cc/40?u=${post.author_username}`);
-          card.setAttribute('caption', post.content ?? '');
-          card.setAttribute('image', post.image_url ?? '');
-          card.setAttribute('likes', post.like_count ?? 0);
+          card.setAttribute('avatar',   `https://i.pravatar.cc/40?u=${post.author_username}`);
+          card.setAttribute('caption',  post.content ?? '');
+          card.setAttribute('image',    post.image_url ?? '');
+          card.setAttribute('likes',    post.like_count ?? 0);
           card.setAttribute('comments', post.comment_count ?? 0);
           resultsContainer.appendChild(card);
         });

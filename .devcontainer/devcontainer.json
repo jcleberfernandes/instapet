@@ -14,7 +14,7 @@
   "remoteEnv": {
     "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
   },
-
+  "forwardPorts": [8000, 80],
   "customizations": {
     "vscode": {
       "extensions": [

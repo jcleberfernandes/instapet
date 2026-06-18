@@ -17,6 +17,9 @@ class UserRead(SQLModel):
     bio: str | None
     avatar_url: str | None
     created_at: datetime
+    follower_count: int = 0
+    following_count: int = 0
+    followed_by_me: bool = False
 
 
 class UserUpdate(SQLModel):

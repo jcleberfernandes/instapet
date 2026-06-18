@@ -1,7 +1,7 @@
 import { request, authRequest } from './api.js';
 
-export const getPosts = (params = '') => request(`/posts${params}`);
-export const getPost = (id) => request(`/posts/${id}`);
+export const getPosts = (params = '') => authRequest(`/posts${params}`);
+export const getPost = (id) => authRequest(`/posts/${id}`);
 export const createPost = (data) => authRequest('/posts', { method: 'POST', body: JSON.stringify(data) });
 export const deletePost = (id) => authRequest(`/posts/${id}`, { method: 'DELETE' });
 
@@ -14,7 +14,3 @@ export const unsavePost = (id) => authRequest(`/posts/${id}/save`, { method: 'DE
 export const getComments = (id) => request(`/posts/${id}/comments`);
 export const createComment = (id, data) => authRequest(`/posts/${id}/comments`, { method: 'POST', body: JSON.stringify(data) });
 export const deleteComment = (commentId) => authRequest(`/posts/comments/${commentId}`, { method: 'DELETE' });
-
-
-
-console.log(getPost(1))

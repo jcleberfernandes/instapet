@@ -2,4 +2,6 @@ import { request, authRequest } from './api.js';
 
 export const getMe = () => authRequest('/users/me');
 export const updateMe = (data) => authRequest('/users/me', { method: 'PATCH', body: JSON.stringify(data) });
-export const getUser = (username) => request(`/users/${username}`);
+export const getUser = (username) => authRequest(`/users/${username}`);
+export const followUser = (username) => authRequest(`/users/${username}/follow`, { method: 'POST' });
+export const unfollowUser = (username) => authRequest(`/users/${username}/follow`, { method: 'DELETE' });

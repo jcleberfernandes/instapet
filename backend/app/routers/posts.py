@@ -246,17 +246,21 @@ def list_comments(
     post = session.get(Post, post_id)
     if not post:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Post não encontrado")
-    return [
-        CommentRead(
+    comments = session.exec(
+        select(Comment).where(Comment.post_id == post_id).order_by(Comment.created_at)
+    ).all()
+    result = []
+    for c in comments:
+        author = session.get(User, c.author_id)
+        result.append(CommentRead(
             id=c.id,
             content=c.content,
             created_at=c.created_at,
             author_id=c.author_id,
-            author_username=c.author.username,
+            author_username=author.username if author else None,
             post_id=c.post_id,
-        )
-        for c in post.comments
-    ]
+        ))
+    return result
 
 
 @router.delete("/comments/{comment_id}", status_code=204)

@@ -4,5 +4,6 @@ from app.models.tag import Tag, PostTag
 from app.models.like import Like
 from app.models.save import Save
 from app.models.comment import Comment
+from app.models.follow import Follow
 
-__all__ = ["User", "Post", "Tag", "PostTag", "Like", "Save", "Comment"]
+__all__ = ["User", "Post", "Tag", "PostTag", "Like", "Save", "Comment", "Follow"]

@@ -13,6 +13,7 @@ class UserCard extends HTMLElement {
     const posts       = this.getAttribute('posts') || '0';
     const followers   = this.getAttribute('followers') || '0';
     const following   = this.getAttribute('following') || '0';
+    let followed = this.getAttribute('followed-by-me') === 'true';
 
     this.innerHTML = `
       <div class="user-card">
@@ -39,9 +40,22 @@ class UserCard extends HTMLElement {
           </div>
         </div>
 
-        <button class="user-card__follow-btn">Seguir</button>
+        <button class="user-card__follow-btn${followed ? ' user-card__follow-btn--following' : ''}">
+          ${followed ? 'A seguir' : 'Seguir'}
+        </button>
       </div>
     `;
+
+    this.querySelector('.user-card__follow-btn').addEventListener('click', (e) => {
+      followed = !followed;
+      e.currentTarget.classList.toggle('user-card__follow-btn--following');
+      e.currentTarget.textContent = followed ? 'A seguir' : 'Seguir';
+      this.dispatchEvent(new CustomEvent('user-follow', {
+        detail: { username, followed },
+        bubbles: true,
+        composed: true,
+      }));
+    });
   }
 }
 

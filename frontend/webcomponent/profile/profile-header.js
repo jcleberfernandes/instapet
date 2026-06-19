@@ -54,6 +54,15 @@ export class ProfileHeader extends HTMLElement {
       </div>
     `;
 
+    if (editable) {
+      this.querySelector('.profile-header__edit-btn').addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('profile-edit-open', {
+          bubbles: true,
+          detail: { displayName, bio, avatar },
+        }));
+      });
+    }
+
     if (!editable) {
       let followed = followedByMe;
       const btn = this.querySelector('.profile-header__follow-btn');

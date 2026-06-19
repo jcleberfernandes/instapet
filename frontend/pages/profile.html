@@ -27,12 +27,12 @@
 
     .edit-modal__box {
       position: relative;
-      background: #fff;
+      background: var(--surface);
       border-radius: 16px;
       padding: 28px 28px 24px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 8px 32px rgba(30,20,10,0.18);
+      box-shadow: 0 8px 32px rgba(6,22,19,0.18);
       z-index: 1;
     }
 
@@ -46,7 +46,7 @@
     .edit-modal__title {
       font-size: 17px;
       font-weight: 700;
-      color: #1C1C1C;
+      color: var(--text);
       margin: 0;
     }
 
@@ -54,7 +54,7 @@
       background: none;
       border: none;
       cursor: pointer;
-      color: #9A9A9A;
+      color: var(--text-muted);
       font-size: 22px;
       line-height: 1;
       padding: 2px 6px;
@@ -63,8 +63,8 @@
     }
 
     .edit-modal__close:hover {
-      background: #F5EFE8;
-      color: #1C1C1C;
+      background: var(--hover-bg);
+      color: var(--text);
     }
 
     .edit-form {
@@ -82,27 +82,27 @@
     .edit-form__label {
       font-size: 12px;
       font-weight: 700;
-      color: #7A7A7A;
+      color: var(--text-muted);
       letter-spacing: 0.05em;
       text-transform: uppercase;
     }
 
     .edit-form__input,
     .edit-form__textarea {
-      border: 1.5px solid #D4C8BC;
+      border: 1.5px solid var(--border-md);
       border-radius: 8px;
       padding: 9px 12px;
       font-size: 14px;
       font-family: inherit;
-      color: #1C1C1C;
+      color: var(--text);
       outline: none;
       transition: border-color 0.15s;
-      background: #fff;
+      background: var(--input-bg);
     }
 
     .edit-form__input:focus,
     .edit-form__textarea:focus {
-      border-color: #5B8A6B;
+      border-color: var(--color-primary);
     }
 
     .edit-form__textarea {
@@ -121,8 +121,8 @@
       height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #E8DDD4;
-      background: #F5EFE8;
+      border: 2px solid var(--border);
+      background: var(--subtle-bg);
       flex-shrink: 0;
     }
 
@@ -141,26 +141,26 @@
       font-weight: 700;
       font-family: inherit;
       cursor: pointer;
-      border: 1.5px solid #D4C8BC;
+      border: 1.5px solid var(--border-md);
       background: none;
-      color: #7A7A7A;
+      color: var(--text-muted);
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
 
     .edit-form__save {
-      background: #5B8A6B;
-      border-color: #5B8A6B;
+      background: var(--color-primary);
+      border-color: var(--color-primary);
       color: #fff;
     }
 
     .edit-form__cancel:hover {
-      background: #F5EFE8;
-      color: #1C1C1C;
+      background: var(--hover-bg);
+      color: var(--text);
     }
 
     .edit-form__save:hover {
-      background: #4a7559;
-      border-color: #4a7559;
+      background: var(--color-dark);
+      border-color: var(--color-dark);
     }
 
     .edit-form__save:disabled {

@@ -13,6 +13,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      min-height: calc(100vh - 62px - 32px);
     }
 
     .search-page__bar-wrap {
@@ -22,12 +23,12 @@
     .search-page__bar {
       display: flex;
       align-items: center;
-      background: #fff;
-      border: 1.5px solid #E8DDD4;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
       transition: border-color 0.15s;
-      box-shadow: 0 2px 8px rgba(30,20,10,0.06);
+      box-shadow: var(--shadow-sm);
     }
 
     .search-page__bar:focus-within {
@@ -37,7 +38,7 @@
     .search-page__icon {
       width: 18px;
       height: 18px;
-      color: #9A9A9A;
+      color: var(--text-muted);
       flex-shrink: 0;
       margin-left: 14px;
     }
@@ -49,11 +50,11 @@
       padding: 12px 14px;
       font-size: 15px;
       font-family: inherit;
-      color: #1C1C1C;
+      color: var(--text);
       background: transparent;
     }
 
-    .search-page__input::placeholder { color: #B0A898; }
+    .search-page__input::placeholder { color: var(--placeholder); }
 
     /* Autocomplete */
     .autocomplete {
@@ -61,10 +62,10 @@
       top: calc(100% + 6px);
       left: 0;
       right: 0;
-      background: #fff;
-      border: 1.5px solid #E8DDD4;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
       border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(30,20,10,0.13);
+      box-shadow: 0 8px 24px rgba(6,22,19,0.13);
       z-index: 200;
       list-style: none;
       padding: 6px;
@@ -81,14 +82,14 @@
       border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      color: #1C1C1C;
+      color: var(--text);
       transition: background 0.1s;
       text-decoration: none;
     }
 
     .autocomplete__item:hover,
     .autocomplete__item--active {
-      background: #F5EFE8;
+      background: var(--hover-bg);
     }
 
     .autocomplete__item mark {
@@ -102,7 +103,7 @@
       height: 32px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #E8DDD4;
+      border: 2px solid var(--border);
       flex-shrink: 0;
     }
 
@@ -123,14 +124,14 @@
 
     .autocomplete__user-handle {
       font-size: 11px;
-      color: #9A9A9A;
+      color: var(--text-muted);
     }
 
     .autocomplete__tag-icon {
       width: 30px;
       height: 30px;
       border-radius: 8px;
-      background: #E6F5F2;
+      background: var(--color-light);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -150,12 +151,12 @@
       flex: 1;
       padding: 9px 0;
       border-radius: 10px;
-      border: 1.5px solid #E8DDD4;
-      background: #fff;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
       font-size: 13px;
       font-weight: 700;
       font-family: inherit;
-      color: #9A9A9A;
+      color: var(--text-muted);
       cursor: pointer;
       transition: background 0.15s, color 0.15s, border-color 0.15s;
     }
@@ -171,23 +172,23 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      background: #fff;
+      background: var(--surface);
       border-radius: 12px;
       padding: 14px 16px;
-      box-shadow: 0 2px 8px rgba(30,20,10,0.06);
+      box-shadow: var(--shadow-sm);
       text-decoration: none;
       color: inherit;
       transition: box-shadow 0.15s;
     }
 
-    .user-result:hover { box-shadow: 0 4px 16px rgba(30,20,10,0.1); }
+    .user-result:hover { box-shadow: 0 4px 16px rgba(6,22,19,0.1); }
 
     .user-result__avatar {
       width: 48px;
       height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      border: 2px solid #E8DDD4;
+      border: 2px solid var(--border);
       flex-shrink: 0;
     }
 
@@ -196,18 +197,18 @@
     .user-result__name {
       font-size: 15px;
       font-weight: 700;
-      color: #1C1C1C;
+      color: var(--text);
       display: block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
 
-    .user-result__handle { font-size: 13px; color: #9A9A9A; }
+    .user-result__handle { font-size: 13px; color: var(--text-muted); }
 
     .user-result__stats {
       font-size: 12px;
-      color: #9A9A9A;
+      color: var(--text-muted);
       text-align: right;
       flex-shrink: 0;
     }

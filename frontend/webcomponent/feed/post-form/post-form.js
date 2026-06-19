@@ -1,5 +1,3 @@
-import { avatarHTML } from '../../ui/avatar.js';
-
 const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = new URL('./post-form.css', import.meta.url);
@@ -15,32 +13,33 @@ export class PostForm extends HTMLElement {
 
     this.innerHTML = `
       <div class="post-form">
-        <div class="post-form__header">
-          ${avatarHTML(displayName, avatar, 'post-form__avatar')}
-          <div class="post-form__fields">
-            <textarea
-              class="post-form__textarea"
-              placeholder="O que se passa com o teu pet? 🐾"
-              maxlength="${MAX_CHARS}"
-              rows="3"
-            ></textarea>
-            <input
-              class="post-form__image-input"
-              type="url"
-              placeholder="URL da imagem (opcional)"
-            >
-            <input
-              class="post-form__tags-input"
-              type="text"
-              placeholder="Tags (ex: gatos, cães, funny)"
-            >
-            <div class="post-form__footer">
-              <span class="post-form__char-count">0 / ${MAX_CHARS}</span>
-              <button class="post-form__submit" disabled>Publicar</button>
-            </div>
-            <span class="post-form__error" hidden></span>
-          </div>
+        <h3 class="post-form__title">Criar publicação</h3>
+
+        <textarea
+          class="post-form__textarea"
+          placeholder="O que se passa com o teu pet? 🐾"
+          maxlength="${MAX_CHARS}"
+          rows="3"
+        ></textarea>
+
+        <div class="post-form__secondary">
+          <input
+            class="post-form__image-input"
+            type="url"
+            placeholder="URL da imagem (opcional)"
+          >
+          <input
+            class="post-form__tags-input"
+            type="text"
+            placeholder="Tags (ex: gatos, cães, funny)"
+          >
         </div>
+
+        <div class="post-form__footer">
+          <span class="post-form__char-count">0 / ${MAX_CHARS}</span>
+          <button class="post-form__submit" disabled>Publicar</button>
+        </div>
+        <span class="post-form__error" hidden></span>
       </div>
     `;
 

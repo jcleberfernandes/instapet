@@ -15,6 +15,7 @@ class PostRead(SQLModel):
     created_at: datetime
     author_id: int
     author_username: str
+    author_avatar_url: str | None = None
     tags: list[str]
     like_count: int
     comment_count: int

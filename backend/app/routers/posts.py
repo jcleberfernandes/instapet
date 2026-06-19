@@ -65,6 +65,7 @@ def _enrich_post(
         created_at=post.created_at,
         author_id=post.author_id,
         author_username=user.username if user else None,
+        author_avatar_url=user.avatar_url if user else None,
         tags=tag_names,
         like_count=len(likes),
         save_count=len(saves),
@@ -131,6 +132,24 @@ def list_posts(
     user_id = current_user.id if current_user else None
 
     return [_enrich_post(p, session, user_id) for p in posts]
+
+@router.get("/tags", response_model=list[str])
+def list_popular_tags(
+    limit: int = Query(default=10, le=50),
+    session: Session = Depends(get_db),
+):
+    post_tags = session.exec(select(PostTag)).all()
+    counts: dict[int, int] = {}
+    for pt in post_tags:
+        counts[pt.tag_id] = counts.get(pt.tag_id, 0) + 1
+    sorted_ids = sorted(counts, key=lambda tid: counts[tid], reverse=True)[:limit]
+    tags = []
+    for tid in sorted_ids:
+        tag = session.get(Tag, tid)
+        if tag:
+            tags.append(f"#{tag.name}")
+    return tags
+
 
 @router.get("/saved", response_model=list[PostRead])  
 def list_saved_posts(
@@ -273,6 +292,7 @@ def list_comments(
             created_at=c.created_at,
             author_id=c.author_id,
             author_username=author.username if author else None,
+            author_avatar_url=author.avatar_url if author else None,
             post_id=c.post_id,
         ))
     return result

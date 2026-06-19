@@ -45,7 +45,8 @@
   color: #7A7A7A;
 }
 
-.profile-header__edit-btn {
+.profile-header__edit-btn,
+.profile-header__follow-btn {
   padding: 6px 18px;
   background: transparent;
   border: 1.5px solid #5B8A6B;
@@ -60,8 +61,20 @@
   transition: background 0.15s, color 0.15s;
 }
 
-.profile-header__edit-btn:hover {
+.profile-header__edit-btn:hover,
+.profile-header__follow-btn:hover {
   background: #5B8A6B;
+  color: #fff;
+}
+
+.profile-header__follow-btn--following {
+  background: #5B8A6B;
+  color: #fff;
+}
+
+.profile-header__follow-btn--following:hover {
+  background: #c0392b;
+  border-color: #c0392b;
   color: #fff;
 }
 

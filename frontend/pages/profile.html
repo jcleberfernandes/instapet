@@ -12,7 +12,6 @@
 
   <div class="profile-layout">
     <div id="profile-header-container"></div>
-    <div id="follow-container"></div>
     <div id="profile-grid-container"></div>
   </div>
 
@@ -48,35 +47,16 @@
         header.setAttribute('followers',    user.follower_count  ?? 0);
         header.setAttribute('following',    user.following_count ?? 0);
         header.setAttribute('likes',        totalLikes);
-        header.setAttribute('editable',     isOwnProfile ? 'true' : 'false');
+        header.setAttribute('editable',        isOwnProfile ? 'true' : 'false');
+        header.setAttribute('followed-by-me',  !isOwnProfile && (user.followed_by_me ?? false) ? 'true' : 'false');
         document.getElementById('profile-header-container').appendChild(header);
 
-        // ── Follow button (só em perfis de outros) ───────
-        if (!isOwnProfile) {
-          let followedByMe = user.followed_by_me ?? false;
-
-          const btn = document.createElement('button');
-          btn.className = 'follow-btn';
-          btn.textContent = followedByMe ? 'A seguir' : 'Seguir';
-
-          btn.addEventListener('click', async () => {
-            try {
-              if (followedByMe) {
-                await unfollowUser(user.username);
-                followedByMe = false;
-                btn.textContent = 'Seguir';
-              } else {
-                await followUser(user.username);
-                followedByMe = true;
-                btn.textContent = 'A seguir';
-              }
-            } catch (e) {
-              console.error('Erro ao seguir/deixar de seguir', e);
-            }
-          });
-
-          document.getElementById('follow-container').appendChild(btn);
-        }
+        document.addEventListener('profile-follow', async (e) => {
+          try {
+            if (e.detail.followed) await followUser(e.detail.username);
+            else await unfollowUser(e.detail.username);
+          } catch (err) { console.error('Erro ao seguir/deixar de seguir', err); }
+        });
 
         // ── Grid (criado dinamicamente para own-profile estar definido antes do connectedCallback) ──
         const grid = document.createElement('profile-grid');

@@ -1,11 +1,11 @@
 .profile-header {
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   padding: 24px;
   display: flex;
   gap: 20px;
   align-items: flex-start;
-  box-shadow: 0 2px 12px rgba(30, 20, 10, 0.06);
+  box-shadow: var(--shadow-sm);
   margin-bottom: 10px;
 }
 
@@ -14,7 +14,7 @@
   height: 80px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #E8DDD4;
+  border: 3px solid var(--border);
   flex-shrink: 0;
 }
 
@@ -36,39 +36,40 @@
   margin: 0 0 2px;
   font-size: 18px;
   font-weight: 700;
-  color: #1C1C1C;
+  color: var(--text);
   line-height: 1.2;
 }
 
 .profile-header__username {
   font-size: 13px;
-  color: #7A7A7A;
+  color: var(--text-muted);
 }
 
 .profile-header__edit-btn,
 .profile-header__follow-btn {
   padding: 6px 18px;
   background: transparent;
-  border: 1.5px solid #5B8A6B;
-  border-radius: 8px;
-  color: #5B8A6B;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-primary);
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+  font-family: inherit;
   transition: background 0.15s, color 0.15s;
 }
 
 .profile-header__edit-btn:hover,
 .profile-header__follow-btn:hover {
-  background: #5B8A6B;
+  background: var(--color-primary);
   color: #fff;
 }
 
 .profile-header__follow-btn--following {
-  background: #5B8A6B;
+  background: var(--color-primary);
   color: #fff;
 }
 
@@ -92,17 +93,17 @@
 .profile-header__stat-value {
   font-size: 16px;
   font-weight: 700;
-  color: #1C1C1C;
+  color: var(--text);
 }
 
 .profile-header__stat-label {
   font-size: 12px;
-  color: #7A7A7A;
+  color: var(--text-muted);
 }
 
 .profile-header__bio {
   margin: 0;
   font-size: 14px;
-  color: #444;
+  color: var(--text-body);
   line-height: 1.5;
 }

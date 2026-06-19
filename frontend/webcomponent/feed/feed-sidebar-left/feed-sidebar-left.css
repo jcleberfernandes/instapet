@@ -102,12 +102,3 @@
   background: #F5EFE8;
   color: var(--color-primary);
 }
-
-.feed-sidebar-left__nav-link--premium {
-  color: var(--color-primary);
-}
-
-.feed-sidebar-left__nav-link--premium:hover {
-  background: var(--color-primary);
-  color: #fff;
-}

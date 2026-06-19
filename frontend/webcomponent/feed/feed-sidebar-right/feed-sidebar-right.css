@@ -105,22 +105,35 @@
   text-decoration: underline;
 }
 
+.feed-sidebar-right__loading {
+  font-size: 12px;
+  color: #9A9A9A;
+  list-style: none;
+  padding: 4px 0;
+}
+
 .feed-sidebar-right__topics {
   list-style: none;
   padding: 0;
   margin: 0 0 12px;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .feed-sidebar-right__topic-link {
-  font-size: 13px;
-  font-weight: 600;
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--color-light, #E6F5F2);
+  font-size: 12px;
+  font-weight: 700;
   color: var(--color-primary);
   text-decoration: none;
+  transition: background 0.15s, color 0.15s;
 }
 
 .feed-sidebar-right__topic-link:hover {
-  text-decoration: underline;   
+  background: var(--color-primary);
+  color: #fff;
 }

@@ -33,24 +33,42 @@
     import '../webcomponent/ui/postcard.js';
     import '../webcomponent/feed/feed-sidebar-left/feed-sidebar-left.js';
     import '../webcomponent/feed/feed-sidebar-right/feed-sidebar-right.js';
-    import { getPosts, likePost, unlikePost, savePost, unsavePost } from '../services/posts.js';
+    import '../webcomponent/feed/post-form/post-form.js';
+    import { getPosts, likePost, unlikePost, savePost, unsavePost, createPost } from '../services/posts.js';
     import { getMe } from '../services/users.js';
 
-    const feedContainer      = document.getElementById('feed-container');
-    const leftSidebarContainer = document.getElementById('left-sidebar-container');
+    const feedContainer         = document.getElementById('feed-container');
+    const leftSidebarContainer  = document.getElementById('left-sidebar-container');
+
+    let currentUser = null;
 
     async function loadSidebar() {
       const sidebar = document.createElement('feed-sidebar-left');
       try {
-        const user = await getMe();
-        sidebar.setAttribute('username',     user.username ?? '');
-        sidebar.setAttribute('display-name', user.display_name ?? user.username ?? '');
-        sidebar.setAttribute('avatar',       user.avatar_url ?? `https://i.pravatar.cc/56?u=${user.username}`);
-        sidebar.setAttribute('likes',        user.like_count ?? '0');
-        sidebar.setAttribute('followers',    user.follower_count ?? '0');
-        sidebar.setAttribute('following',    user.following_count ?? '0');
+        currentUser = await getMe();
+        sidebar.setAttribute('username',     currentUser.username ?? '');
+        sidebar.setAttribute('display-name', currentUser.display_name ?? currentUser.username ?? '');
+        sidebar.setAttribute('avatar',       currentUser.avatar_url ?? '');
+        sidebar.setAttribute('likes',        currentUser.like_count ?? '0');
+        sidebar.setAttribute('followers',    currentUser.follower_count ?? '0');
+        sidebar.setAttribute('following',    currentUser.following_count ?? '0');
       } catch { /* sem sessão, mostra defaults */ }
       leftSidebarContainer.appendChild(sidebar);
+    }
+
+    function buildPostCard(post) {
+      const card = document.createElement('post-card');
+      card.setAttribute('post-id',      post.id);
+      card.setAttribute('username',     post.author_username ?? 'user');
+      card.setAttribute('avatar',       post.author_avatar_url ?? '');
+      card.setAttribute('caption',      post.content ?? '');
+      card.setAttribute('image',        post.image_url ?? '');
+      card.setAttribute('likes',        post.like_count ?? 0);
+      card.setAttribute('comments',     post.comment_count ?? 0);
+      card.setAttribute('liked-by-me',  post.liked_by_me ? 'true' : 'false');
+      card.setAttribute('saved-by-me',  post.saved_by_me ? 'true' : 'false');
+      card.setAttribute('tags',         JSON.stringify(post.tags ?? []));
+      return card;
     }
 
     async function loadFeed() {
@@ -58,28 +76,47 @@
         const posts = await getPosts();
         feedContainer.innerHTML = '';
 
+        const form = document.createElement('post-form');
+        if (currentUser) {
+          form.setAttribute('username',     currentUser.username ?? '');
+          form.setAttribute('display-name', currentUser.display_name ?? currentUser.username ?? '');
+          form.setAttribute('avatar',       currentUser.avatar_url ?? '');
+        }
+        feedContainer.appendChild(form);
+
         if (!posts.length) {
-          feedContainer.innerHTML = '<p class="feed__status">Nenhum post ainda. Seja o primeiro!</p>';
+          const empty = document.createElement('p');
+          empty.className = 'feed__status';
+          empty.textContent = 'Nenhum post ainda. Seja o primeiro!';
+          feedContainer.appendChild(empty);
           return;
         }
 
-        posts.forEach((post) => {
-          const card = document.createElement('post-card');
-          card.setAttribute('post-id',  post.id);
-          card.setAttribute('username', post.author_username ?? 'user');
-          card.setAttribute('avatar',   `https://i.pravatar.cc/40?u=${post.author_username}`);
-          card.setAttribute('caption',  post.content ?? '');
-          card.setAttribute('image',    post.image_url ?? '');
-          card.setAttribute('likes',        post.like_count ?? 0);
-          card.setAttribute('comments',     post.comment_count ?? 0);
-          card.setAttribute('liked-by-me',  post.liked_by_me ? 'true' : 'false');
-          card.setAttribute('saved-by-me',  post.saved_by_me ? 'true' : 'false');
-          feedContainer.appendChild(card);
-        });
+        posts.forEach(post => feedContainer.appendChild(buildPostCard(post)));
       } catch {
         feedContainer.innerHTML = '<p class="feed__status feed__status--error">Erro ao carregar posts.</p>';
       }
     }
+
+    document.addEventListener('post-submit', async (e) => {
+      try {
+        const newPost = await createPost({ content: e.detail.content, image_url: e.detail.image_url, tags: e.detail.tags ?? [] });
+        document.dispatchEvent(new Event('post-created'));
+
+        const card = buildPostCard({
+          ...newPost,
+          author_username: currentUser?.username ?? '',
+          liked_by_me: false,
+          saved_by_me: false,
+        });
+
+        const form = feedContainer.querySelector('post-form');
+        form.insertAdjacentElement('afterend', card);
+      } catch (err) {
+        console.error('create post error', err);
+        document.dispatchEvent(new Event('post-create-error'));
+      }
+    });
 
     document.addEventListener('post-like', async (e) => {
       try {
@@ -95,7 +132,7 @@
       } catch (err) { console.error('save error', err); }
     });
 
-    loadSidebar();
+    await loadSidebar();
     loadFeed();
   </script>
 

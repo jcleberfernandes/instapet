@@ -5,6 +5,175 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>InstaPet – Perfil</title>
   <link rel="stylesheet" href="../style.css">
+  <style>
+    .edit-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .edit-modal--open {
+      display: flex;
+    }
+
+    .edit-modal__backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .edit-modal__box {
+      position: relative;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 8px 32px rgba(6,22,19,0.18);
+      z-index: 1;
+    }
+
+    .edit-modal__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+
+    .edit-modal__title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .edit-modal__close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 22px;
+      line-height: 1;
+      padding: 2px 6px;
+      border-radius: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .edit-modal__close:hover {
+      background: var(--hover-bg);
+      color: var(--text);
+    }
+
+    .edit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .edit-form__group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .edit-form__label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .edit-form__input,
+    .edit-form__textarea {
+      border: 1.5px solid var(--border-md);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      background: var(--input-bg);
+    }
+
+    .edit-form__input:focus,
+    .edit-form__textarea:focus {
+      border-color: var(--color-primary);
+    }
+
+    .edit-form__textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .edit-form__avatar-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .edit-form__avatar-preview {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      background: var(--subtle-bg);
+      flex-shrink: 0;
+    }
+
+    .edit-form__actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .edit-form__cancel,
+    .edit-form__save {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      border: 1.5px solid var(--border-md);
+      background: none;
+      color: var(--text-muted);
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+
+    .edit-form__save {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .edit-form__cancel:hover {
+      background: var(--hover-bg);
+      color: var(--text);
+    }
+
+    .edit-form__save:hover {
+      background: var(--color-dark);
+      border-color: var(--color-dark);
+    }
+
+    .edit-form__save:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .edit-form__error {
+      font-size: 13px;
+      color: #c0392b;
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
 
@@ -12,8 +181,40 @@
 
   <div class="profile-layout">
     <div id="profile-header-container"></div>
-    <div id="follow-container"></div>
     <div id="profile-grid-container"></div>
+  </div>
+
+  <!-- Modal de edição de perfil -->
+  <div id="edit-modal" class="edit-modal">
+    <div class="edit-modal__backdrop" id="edit-modal-backdrop"></div>
+    <div class="edit-modal__box">
+      <div class="edit-modal__header">
+        <h2 class="edit-modal__title">Editar perfil</h2>
+        <button class="edit-modal__close" id="edit-modal-close" aria-label="Fechar">✕</button>
+      </div>
+      <form class="edit-form" id="edit-form" novalidate>
+        <div class="edit-form__group">
+          <label class="edit-form__label" for="edit-display-name">Nome</label>
+          <input class="edit-form__input" id="edit-display-name" type="text" maxlength="60" placeholder="O teu nome">
+        </div>
+        <div class="edit-form__group">
+          <label class="edit-form__label" for="edit-bio">Bio</label>
+          <textarea class="edit-form__textarea" id="edit-bio" maxlength="200" placeholder="Fala um pouco sobre ti..."></textarea>
+        </div>
+        <div class="edit-form__group">
+          <label class="edit-form__label" for="edit-avatar">URL do avatar</label>
+          <div class="edit-form__avatar-row">
+            <img class="edit-form__avatar-preview" id="edit-avatar-preview" src="" alt="preview">
+            <input class="edit-form__input" id="edit-avatar" type="url" placeholder="https://...">
+          </div>
+        </div>
+        <p class="edit-form__error" id="edit-error" hidden></p>
+        <div class="edit-form__actions">
+          <button type="button" class="edit-form__cancel" id="edit-cancel">Cancelar</button>
+          <button type="submit" class="edit-form__save" id="edit-save">Guardar</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <app-footer></app-footer>
@@ -23,66 +224,110 @@
     import '../webcomponent/layout/footer.js';
     import '../webcomponent/profile/profile-header.js';
     import '../webcomponent/profile/profile-grid.js';
-    import { getMe, getUser, followUser, unfollowUser } from '../services/users.js';
+    import { getMe, getUser, updateMe, followUser, unfollowUser } from '../services/users.js';
     import { getPosts } from '../services/posts.js';
 
     const params        = new URLSearchParams(window.location.search);
     const usernameParam = params.get('user');
     const isOwnProfile  = !usernameParam;
 
+    // ── Modal de edição ───────────────────────────────────────────
+    const modal        = document.getElementById('edit-modal');
+    const editForm     = document.getElementById('edit-form');
+    const editName     = document.getElementById('edit-display-name');
+    const editBio      = document.getElementById('edit-bio');
+    const editAvatar   = document.getElementById('edit-avatar');
+    const avatarPreview= document.getElementById('edit-avatar-preview');
+    const editError    = document.getElementById('edit-error');
+    const saveBtn      = document.getElementById('edit-save');
+
+    function openModal(data) {
+      editName.value    = data.displayName || '';
+      editBio.value     = data.bio || '';
+      editAvatar.value  = data.avatar || '';
+      avatarPreview.src = data.avatar || '';
+      editError.hidden  = true;
+      modal.classList.add('edit-modal--open');
+      editName.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('edit-modal--open');
+      editForm.reset();
+    }
+
+    document.getElementById('edit-modal-close').addEventListener('click', closeModal);
+    document.getElementById('edit-cancel').addEventListener('click', closeModal);
+    document.getElementById('edit-modal-backdrop').addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    editAvatar.addEventListener('input', () => {
+      avatarPreview.src = editAvatar.value;
+    });
+
+    editForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      editError.hidden = true;
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'A guardar...';
+      try {
+        const payload = {};
+        const nameVal = editName.value.trim();
+        if (nameVal) payload.display_name = nameVal;
+        payload.bio        = editBio.value.trim()    || null;
+        payload.avatar_url = editAvatar.value.trim() || null;
+        await updateMe(payload);
+        closeModal();
+        window.location.reload();
+      } catch {
+        editError.textContent = 'Erro ao guardar. Tenta novamente.';
+        editError.hidden = false;
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'Guardar';
+      }
+    });
+
+    // ── Perfil ───────────────────────────────────────────────────
     async function loadProfile() {
       try {
-        const user       = isOwnProfile ? await getMe() : await getUser(usernameParam);
-        const posts      = await getPosts();
-        const userPosts  = posts.filter(p => p.author_username === user.username);
-        const totalLikes = userPosts.reduce((sum, p) => sum + (p.like_count ?? 0), 0);
+        const user      = isOwnProfile ? await getMe() : await getUser(usernameParam);
+        const posts     = await getPosts();
+        const userPosts = posts.filter(p => p.author_username === user.username);
+        const totalLikes= userPosts.reduce((sum, p) => sum + (p.like_count ?? 0), 0);
 
         document.title = `InstaPet – @${user.username}`;
 
-        // ── Header ───────────────────────────────────────
         const header = document.createElement('profile-header');
-        header.setAttribute('username',     user.username);
-        header.setAttribute('display-name', user.display_name ?? user.username);
-        header.setAttribute('avatar',       user.avatar_url ?? '');
-        header.setAttribute('bio',          user.bio ?? '');
-        header.setAttribute('followers',    user.follower_count  ?? 0);
-        header.setAttribute('following',    user.following_count ?? 0);
-        header.setAttribute('likes',        totalLikes);
-        header.setAttribute('editable',     isOwnProfile ? 'true' : 'false');
+        header.setAttribute('username',      user.username);
+        header.setAttribute('display-name',  user.display_name ?? user.username);
+        header.setAttribute('avatar',        user.avatar_url ?? '');
+        header.setAttribute('bio',           user.bio ?? '');
+        header.setAttribute('followers',     user.follower_count  ?? 0);
+        header.setAttribute('following',     user.following_count ?? 0);
+        header.setAttribute('likes',         totalLikes);
+        header.setAttribute('editable',        isOwnProfile ? 'true' : 'false');
+        header.setAttribute('followed-by-me',  !isOwnProfile && (user.followed_by_me ?? false) ? 'true' : 'false');
         document.getElementById('profile-header-container').appendChild(header);
 
-        // ── Follow button (só em perfis de outros) ───────
-        if (!isOwnProfile) {
-          let followedByMe = user.followed_by_me ?? false;
+        document.addEventListener('profile-edit-open', (e) => openModal(e.detail));
 
-          const btn = document.createElement('button');
-          btn.className = 'follow-btn';
-          btn.textContent = followedByMe ? 'A seguir' : 'Seguir';
+        document.addEventListener('profile-follow', async (e) => {
+          try {
+            if (e.detail.followed) await followUser(e.detail.username);
+            else await unfollowUser(e.detail.username);
+          } catch (err) { console.error('Erro ao seguir/deixar de seguir', err); }
+        });
 
-          btn.addEventListener('click', async () => {
-            try {
-              if (followedByMe) {
-                await unfollowUser(user.username);
-                followedByMe = false;
-                btn.textContent = 'Seguir';
-              } else {
-                await followUser(user.username);
-                followedByMe = true;
-                btn.textContent = 'A seguir';
-              }
-            } catch (e) {
-              console.error('Erro ao seguir/deixar de seguir', e);
-            }
-          });
-
-          document.getElementById('follow-container').appendChild(btn);
-        }
-
-        // ── Grid (criado dinamicamente para own-profile estar definido antes do connectedCallback) ──
         const grid = document.createElement('profile-grid');
         grid.setAttribute('own-profile', isOwnProfile ? 'true' : 'false');
         document.getElementById('profile-grid-container').appendChild(grid);
         grid.setPosts(userPosts);
+
+        if (params.get('tab') === 'saved' && isOwnProfile) {
+          const savedTab = grid.querySelector('[data-tab="saved"]');
+          if (savedTab) savedTab.click();
+        }
 
       } catch (e) {
         console.error(e);

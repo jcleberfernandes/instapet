@@ -38,11 +38,19 @@
     import '../webcomponent/post/comment-form.js';
     import '../webcomponent/post/post-detail/post-detail.js';
     import '../webcomponent/post/comment-item/comment-item.js';
-    import { getPost, getComments, createComment, likePost, unlikePost, savePost, unsavePost } from '../services/posts.js';
-    import { getUser, followUser, unfollowUser } from '../services/users.js';
+    import { getPost, getComments, createComment, deleteComment, updatePost, deletePost, likePost, unlikePost, savePost, unsavePost } from '../services/posts.js';
+    import { getMe, getUser, followUser, unfollowUser } from '../services/users.js';
 
     const params          = new URLSearchParams(window.location.search);
     const postId          = params.get('id');
+
+    let currentUserId   = null;
+    let currentUsername = null;
+    try {
+      const me = await getMe();
+      currentUserId   = me.id;
+      currentUsername = me.username;
+    } catch { /* não autenticado */ }
 
     if (!postId) window.location.href = '/pages/feed.html';
 
@@ -57,27 +65,34 @@
 
         document.title = `InstaPet – Post de @${post.author_username ?? 'user'}`;
 
+        const isMyPost = (currentUserId && post.author_id === currentUserId)
+                      || (currentUsername && post.author_username === currentUsername);
+
         postContainer.innerHTML = '';
         const detail = document.createElement('post-detail');
         detail.setAttribute('post-id',  post.id);
         detail.setAttribute('username', post.author_username ?? 'user');
-        detail.setAttribute('avatar',   `https://i.pravatar.cc/40?u=${post.author_username}`);
+        detail.setAttribute('avatar',   post.author_avatar_url ?? '');
         detail.setAttribute('caption',  post.content ?? '');
         detail.setAttribute('image',    post.image_url ?? '');
         detail.setAttribute('likes',       post.like_count ?? 0);
         detail.setAttribute('comments',    post.comment_count ?? 0);
         detail.setAttribute('liked-by-me', post.liked_by_me ? 'true' : 'false');
         detail.setAttribute('saved-by-me', post.saved_by_me ? 'true' : 'false');
+        detail.setAttribute('mine',        isMyPost ? 'true' : 'false');
+        detail.setAttribute('tags',        JSON.stringify(post.tags ?? []));
         postContainer.appendChild(detail);
 
         const authorCardEl = document.createElement('user-card');
-        authorCardEl.setAttribute('username',      post.author_username ?? 'user');
-        authorCardEl.setAttribute('display-name',  post.author_username ?? 'user');
-        authorCardEl.setAttribute('avatar',        `https://i.pravatar.cc/40?u=${post.author_username}`);
+        authorCardEl.setAttribute('username',     post.author_username ?? 'user');
+        authorCardEl.setAttribute('display-name', post.author_username ?? 'user');
+        authorCardEl.setAttribute('avatar',       post.author_avatar_url ?? '');
+        authorCardEl.setAttribute('is-me',        isMyPost ? 'true' : 'false');
         try {
           const authorData = await getUser(post.author_username);
-          authorCardEl.setAttribute('followers',     authorData.follower_count ?? '0');
-          authorCardEl.setAttribute('following',     authorData.following_count ?? '0');
+          authorCardEl.setAttribute('avatar',         authorData.avatar_url ?? '');
+          authorCardEl.setAttribute('followers',      authorData.follower_count ?? '0');
+          authorCardEl.setAttribute('following',      authorData.following_count ?? '0');
           authorCardEl.setAttribute('followed-by-me', authorData.followed_by_me ? 'true' : 'false');
         } catch { /* sem sessão ou erro, mostra defaults */ }
         authorCard.appendChild(authorCardEl);
@@ -101,16 +116,28 @@
 
         comments.forEach((comment) => {
           const item = document.createElement('comment-item');
+          item.setAttribute('comment-id',   comment.id);
           item.setAttribute('username',     comment.author_username ?? 'user');
           item.setAttribute('display-name', comment.author_username ?? 'user');
-          item.setAttribute('avatar',       `https://i.pravatar.cc/32?u=${comment.author_username}`);
+          item.setAttribute('avatar',       comment.author_avatar_url ?? '');
           item.setAttribute('content',      comment.content ?? '');
+          item.setAttribute('mine',         currentUserId && comment.author_id === currentUserId ? 'true' : 'false');
           commentsList.appendChild(item);
         });
       } catch {
         commentsList.innerHTML = '<p class="feed__status feed__status--error">Erro ao carregar comentários.</p>';
       }
     }
+
+    document.addEventListener('comment-delete', async (e) => {
+      if (!confirm('Apagar comentário?')) return;
+      try {
+        await deleteComment(postId, e.detail.commentId);
+        await loadComments();
+      } catch {
+        alert('Erro ao apagar comentário.');
+      }
+    });
 
     document.addEventListener('comment-submit', async (e) => {
       if (!localStorage.getItem('token')) {
@@ -148,6 +175,22 @@
         if (e.detail.saved) await savePost(e.detail.postId);
         else await unsavePost(e.detail.postId);
       } catch (err) { console.error('save error', err); }
+    });
+
+    document.addEventListener('post-delete', async (e) => {
+      if (!confirm('Apagar este post?')) return;
+      try {
+        await deletePost(e.detail.postId);
+        window.location.href = '/pages/feed.html';
+      } catch { alert('Erro ao apagar post.'); }
+    });
+
+    document.addEventListener('post-edit', async (e) => {
+      try {
+        await updatePost(e.detail.postId, { content: e.detail.content });
+        const detail = postContainer.querySelector('post-detail');
+        detail?.updateCaption(e.detail.content);
+      } catch { alert('Erro ao editar post.'); }
     });
 
     loadPost();

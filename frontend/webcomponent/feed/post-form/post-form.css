@@ -1,0 +1,125 @@
+.post-form {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.post-form__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--subtle-bg);
+}
+
+/* Textarea */
+.post-form__textarea {
+  width: 100%;
+  resize: none;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--input-bg);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  min-height: 80px;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.post-form__textarea:focus {
+  border-color: var(--color-primary);
+  background: var(--surface);
+}
+
+.post-form__textarea::placeholder {
+  color: var(--placeholder);
+}
+
+/* Secondary inputs side-by-side */
+.post-form__secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.post-form__image-input,
+.post-form__tags-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--input-bg);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.post-form__image-input:focus,
+.post-form__tags-input:focus {
+  border-color: var(--color-primary);
+  background: var(--surface);
+}
+
+.post-form__image-input::placeholder,
+.post-form__tags-input::placeholder {
+  color: var(--placeholder);
+}
+
+/* Footer row */
+.post-form__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.post-form__char-count {
+  font-size: 12px;
+  color: var(--placeholder);
+}
+
+.post-form__char-count--warn {
+  color: #E07B54;
+}
+
+.post-form__submit {
+  padding: 9px 24px;
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.post-form__submit:hover:not(:disabled) {
+  background: var(--color-dark);
+}
+
+.post-form__submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.post-form__error {
+  font-size: 12px;
+  color: #E07B54;
+  margin-top: -4px;
+}

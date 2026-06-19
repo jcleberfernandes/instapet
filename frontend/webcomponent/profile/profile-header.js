@@ -7,14 +7,15 @@ document.head.appendChild(link);
 
 export class ProfileHeader extends HTMLElement {
   connectedCallback() {
-    const username    = this.getAttribute('username') || '';
-    const displayName = this.getAttribute('display-name') || username;
-    const avatar      = this.getAttribute('avatar') || '';
-    const bio         = this.getAttribute('bio') || '';
-    const likes       = this.getAttribute('likes') || '0';
-    const followers   = this.getAttribute('followers') || '0';
-    const following   = this.getAttribute('following') || '0';
-    const editable    = this.getAttribute('editable') === 'true';
+    const username     = this.getAttribute('username') || '';
+    const displayName  = this.getAttribute('display-name') || username;
+    const avatar       = this.getAttribute('avatar') || '';
+    const bio          = this.getAttribute('bio') || '';
+    const likes        = this.getAttribute('likes') || '0';
+    const followers    = this.getAttribute('followers') || '0';
+    const following    = this.getAttribute('following') || '0';
+    const editable     = this.getAttribute('editable') === 'true';
+    const followedByMe = this.getAttribute('followed-by-me') === 'true';
 
     this.innerHTML = `
       <div class="profile-header">
@@ -25,7 +26,12 @@ export class ProfileHeader extends HTMLElement {
               <h2 class="profile-header__name">${displayName}</h2>
               <span class="profile-header__username">@${username}</span>
             </div>
-            ${editable ? `<button class="profile-header__edit-btn">EDIT</button>` : ''}
+            ${editable
+              ? `<button class="profile-header__edit-btn">EDIT</button>`
+              : `<button class="profile-header__follow-btn ${followedByMe ? 'profile-header__follow-btn--following' : ''}">
+                   ${followedByMe ? 'A seguir' : 'Seguir'}
+                 </button>`
+            }
           </div>
 
           <div class="profile-header__stats">
@@ -47,6 +53,29 @@ export class ProfileHeader extends HTMLElement {
         </div>
       </div>
     `;
+
+    if (editable) {
+      this.querySelector('.profile-header__edit-btn').addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('profile-edit-open', {
+          bubbles: true,
+          detail: { displayName, bio, avatar },
+        }));
+      });
+    }
+
+    if (!editable) {
+      let followed = followedByMe;
+      const btn = this.querySelector('.profile-header__follow-btn');
+      btn.addEventListener('click', () => {
+        followed = !followed;
+        btn.textContent = followed ? 'A seguir' : 'Seguir';
+        btn.classList.toggle('profile-header__follow-btn--following', followed);
+        this.dispatchEvent(new CustomEvent('profile-follow', {
+          bubbles: true,
+          detail: { username, followed },
+        }));
+      });
+    }
   }
 }
 

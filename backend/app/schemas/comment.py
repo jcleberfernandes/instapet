@@ -12,4 +12,5 @@ class CommentRead(SQLModel):
     created_at: datetime
     author_id: int
     author_username: str
+    author_avatar_url: str | None = None
     post_id: int

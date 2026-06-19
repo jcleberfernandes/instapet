@@ -54,3 +54,24 @@
   margin: 0;
   word-break: break-word;
 }
+
+.comment-item__delete {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #B0A898;
+  padding: 0 2px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+
+.comment-item__delete .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.comment-item__delete:hover {
+  color: #e53935;
+}

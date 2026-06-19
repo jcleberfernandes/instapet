@@ -12,6 +12,8 @@ export class CommentItem extends HTMLElement {
     const avatar      = this.getAttribute('avatar') || '';
     const content     = this.getAttribute('content') || '';
     const time        = this.getAttribute('time') || '';
+    const mine        = this.getAttribute('mine') === 'true';
+    const commentId   = this.getAttribute('comment-id') || '';
 
     this.innerHTML = `
       <div class="comment-item">
@@ -20,11 +22,21 @@ export class CommentItem extends HTMLElement {
           <div class="comment-item__header">
             <a class="comment-item__username" href="/pages/profile.html?user=${username}">${displayName}</a>
             ${time ? `<span class="comment-item__time">${time}</span>` : ''}
+            ${mine ? `<button class="comment-item__delete" aria-label="Apagar comentário" title="Apagar comentário"><span class="material-symbols-outlined">delete</span></button>` : ''}
           </div>
           <p class="comment-item__text">${content}</p>
         </div>
       </div>
     `;
+
+    if (mine && commentId) {
+      this.querySelector('.comment-item__delete').addEventListener('click', () => {
+        this.dispatchEvent(new CustomEvent('comment-delete', {
+          bubbles: true,
+          detail: { commentId },
+        }));
+      });
+    }
   }
 }
 

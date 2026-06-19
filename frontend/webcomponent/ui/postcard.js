@@ -16,6 +16,8 @@ class PostCard extends HTMLElement {
     const comments = this.getAttribute('comments') || '0';
     let liked = this.getAttribute('liked-by-me') === 'true';
     let saved = this.getAttribute('saved-by-me') === 'true';
+    let tags = [];
+    try { tags = JSON.parse(this.getAttribute('tags') || '[]'); } catch {}
 
     this.innerHTML = `
       <article class="post-card">
@@ -37,6 +39,7 @@ class PostCard extends HTMLElement {
 
         <div class="post-card__body">
           ${caption ? `<p class="post-card__caption"><strong>@${username}</strong> ${caption}</p>` : ''}
+          ${tags.length ? `<div class="post-card__tags">${tags.map(t => `<a class="post-card__tag" href="/pages/search.html?q=${encodeURIComponent(t)}">#${t}</a>`).join('')}</div>` : ''}
 
           <div class="post-card__actions">
             <button class="post-card__action-btn post-card__action-btn--like" data-id="${postId}">
@@ -72,6 +75,8 @@ class PostCard extends HTMLElement {
     likeBtn.addEventListener('click', (e) => {
       liked = !liked;
       e.currentTarget.classList.toggle('post-card__action-btn--liked');
+      const countEl = e.currentTarget.querySelector('span');
+      countEl.textContent = Math.max(0, parseInt(countEl.textContent || '0') + (liked ? 1 : -1));
       this.dispatchEvent(new CustomEvent('post-like', { detail: { postId, liked }, bubbles: true, composed: true }));
     });
 

@@ -67,6 +67,7 @@
       card.setAttribute('comments',     post.comment_count ?? 0);
       card.setAttribute('liked-by-me',  post.liked_by_me ? 'true' : 'false');
       card.setAttribute('saved-by-me',  post.saved_by_me ? 'true' : 'false');
+      card.setAttribute('tags',         JSON.stringify(post.tags ?? []));
       return card;
     }
 
@@ -99,7 +100,7 @@
 
     document.addEventListener('post-submit', async (e) => {
       try {
-        const newPost = await createPost({ content: e.detail.content, image_url: e.detail.image_url });
+        const newPost = await createPost({ content: e.detail.content, image_url: e.detail.image_url, tags: e.detail.tags ?? [] });
         document.dispatchEvent(new Event('post-created'));
 
         const card = buildPostCard({

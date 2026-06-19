@@ -4,6 +4,7 @@ export const getPosts = (params = '') => authRequest(`/posts${params}`);
 export const getPopularTags = () => authRequest('/posts/tags');
 export const getPost = (id) => authRequest(`/posts/${id}`);
 export const createPost = (data) => authRequest('/posts', { method: 'POST', body: JSON.stringify(data) });
+export const updatePost = (id, data) => authRequest(`/posts/${id}`, { method: 'PATCH', body: JSON.stringify(data) });
 export const deletePost = (id) => authRequest(`/posts/${id}`, { method: 'DELETE' });
 
 export const likePost = (id) => authRequest(`/posts/${id}/like`, { method: 'POST' });

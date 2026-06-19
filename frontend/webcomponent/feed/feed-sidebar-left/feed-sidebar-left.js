@@ -46,14 +46,7 @@ export class FeedSidebarLeft extends HTMLElement {
             </svg>
             EXPLORE
           </a>
-          <a class="feed-sidebar-left__nav-link" href="/pages/notifications.html">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-            ACTIVITY
-          </a>
-          <a class="feed-sidebar-left__nav-link" href="/pages/saved.html">
+<a class="feed-sidebar-left__nav-link" href="/pages/saved.html">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
             </svg>

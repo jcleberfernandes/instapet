@@ -1,11 +1,11 @@
 .feed-sidebar-left {
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  box-shadow: 0 2px 12px rgba(30, 20, 10, 0.07);
+  box-shadow: var(--shadow-sm);
 }
 
 .feed-sidebar-left__profile {
@@ -19,7 +19,7 @@
   height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #E8DDD4;
+  border: 2px solid var(--border);
   flex-shrink: 0;
 }
 
@@ -33,7 +33,7 @@
 .feed-sidebar-left__name {
   font-size: 15px;
   font-weight: 700;
-  color: #1C1C1C;
+  color: var(--text);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -41,15 +41,15 @@
 
 .feed-sidebar-left__username {
   font-size: 13px;
-  color: #9A9A9A;
+  color: var(--text-muted);
 }
 
 .feed-sidebar-left__stats {
   display: flex;
   justify-content: space-between;
   padding: 14px 0;
-  border-top: 1px solid #F0E8E0;
-  border-bottom: 1px solid #F0E8E0;
+  border-top: 1px solid var(--subtle-bg);
+  border-bottom: 1px solid var(--subtle-bg);
 }
 
 .feed-sidebar-left__stat {
@@ -62,12 +62,12 @@
 .feed-sidebar-left__stat-value {
   font-size: 15px;
   font-weight: 700;
-  color: #1C1C1C;
+  color: var(--text);
 }
 
 .feed-sidebar-left__stat-label {
   font-size: 11px;
-  color: #9A9A9A;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -87,7 +87,7 @@
   text-decoration: none;
   font-size: 13px;
   font-weight: 600;
-  color: #1C1C1C;
+  color: var(--text);
   letter-spacing: 0.04em;
   transition: background 0.15s, color 0.15s;
 }
@@ -99,6 +99,6 @@
 }
 
 .feed-sidebar-left__nav-link:hover {
-  background: #F5EFE8;
+  background: var(--hover-bg);
   color: var(--color-primary);
 }

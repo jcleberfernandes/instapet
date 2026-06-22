@@ -12,11 +12,10 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/register", response_model=UserRead, status_code=201)
 def register(data: UserCreate, session: Session = Depends(get_db)):
-    existing = session.exec(
-        select(User).where((User.email == data.email) | (User.username == data.username))
-    ).first()
-    if existing:
-        raise HTTPException(status.HTTP_409_CONFLICT, "Email ou username já existe")
+    if session.exec(select(User).where(User.email == data.email)).first():
+        raise HTTPException(status.HTTP_409_CONFLICT, detail={"field": "email", "message": "Este email já está em uso"})
+    if session.exec(select(User).where(User.username == data.username)).first():
+        raise HTTPException(status.HTTP_409_CONFLICT, detail={"field": "username", "message": "Este nome de utilizador já está em uso"})
     
     user = User(
         username=data.username,

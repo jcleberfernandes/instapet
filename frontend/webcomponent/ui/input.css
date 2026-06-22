@@ -34,3 +34,19 @@
 .ui-input__field::placeholder {
   color: var(--placeholder);
 }
+
+.ui-input--error .ui-input__field {
+  border-color: #c0392b;
+  background: #fff5f5;
+}
+
+.ui-input--error .ui-input__field:focus {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
+}
+
+.ui-input__error {
+  font-size: 12px;
+  color: #c0392b;
+  font-weight: 500;
+}

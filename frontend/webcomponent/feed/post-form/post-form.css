@@ -123,3 +123,14 @@
   color: #E07B54;
   margin-top: -4px;
 }
+
+@media (max-width: 600px) {
+  .post-form {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .post-form__secondary {
+    grid-template-columns: 1fr;
+  }
+}

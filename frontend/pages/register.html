@@ -20,17 +20,6 @@
     import '../webcomponent/register/register-form.js';
     import '../webcomponent/ui/input.js';
     import '../webcomponent/ui/button.js';
-    import { register } from '../services/auth.js';
-
-    document.addEventListener('register-submit', async (e) => {
-      const formData = e.detail;
-      try {
-        await register(formData);
-        window.location.href = '/pages/login.html';
-      } catch {
-        alert('Erro ao criar conta. Verifique os dados e tente novamente.');
-      }
-    });
   </script>
 
 </body>

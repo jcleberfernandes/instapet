@@ -9,6 +9,6 @@ class User(SQLModel, table=True):
     password: str
     display_name: str
     bio: str | None = None
-    avatar_url: str | None = None
+    avatar_url: str | None = "https://img.myloview.com/murals/default-avatar-profile-icon-vector-social-media-user-symbol-image-700-244492311.jpg"
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

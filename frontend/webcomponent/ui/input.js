@@ -24,12 +24,32 @@ export class UIInput extends HTMLElement {
     `;
 
     this.querySelector('.ui-input__field').addEventListener('input', (e) => {
+      this.clearError();
       this.dispatchEvent(new CustomEvent('ui-input', {
         detail: { name, value: e.target.value },
         bubbles: true,
         composed: true,
       }));
     });
+  }
+
+  setError(msg) {
+    const wrap = this.querySelector('.ui-input');
+    wrap.classList.add('ui-input--error');
+    let span = wrap.querySelector('.ui-input__error');
+    if (!span) {
+      span = document.createElement('span');
+      span.className = 'ui-input__error';
+      wrap.appendChild(span);
+    }
+    span.textContent = msg;
+  }
+
+  clearError() {
+    const wrap = this.querySelector('.ui-input');
+    if (!wrap) return;
+    wrap.classList.remove('ui-input--error');
+    wrap.querySelector('.ui-input__error')?.remove();
   }
 }
 

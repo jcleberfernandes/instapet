@@ -5,7 +5,12 @@ from sqlmodel import SQLModel
 class PostCreate(SQLModel):
     content: str
     image_url: str | None = None
-    tags: list[str] = []  
+    tags: list[str] = []
+
+
+class PostUpdate(SQLModel):
+    content: str | None = None
+    tags: list[str] | None = None  
 
 
 class PostRead(SQLModel):
@@ -15,6 +20,7 @@ class PostRead(SQLModel):
     created_at: datetime
     author_id: int
     author_username: str
+    author_avatar_url: str | None = None
     tags: list[str]
     like_count: int
     comment_count: int

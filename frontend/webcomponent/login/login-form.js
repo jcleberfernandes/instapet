@@ -1,63 +1,134 @@
+import { login } from '../../services/auth.js';
+
 const link = document.createElement('link');
 link.rel = 'stylesheet';
 link.href = new URL('./login-form.css', import.meta.url);
 document.head.appendChild(link);
 
+const inputCSS = document.createElement('link');
+inputCSS.rel = 'stylesheet';
+inputCSS.href = new URL('../ui/input.css', import.meta.url);
+document.head.appendChild(inputCSS);
+
 export class LoginForm extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
       <div class="login-form">
-        <div class="login-form__header">
-          <h2 class="login-form__title">Entrar</h2>
-          <p class="login-form__subtitle">Bem-vindo de volta ao Instapet</p>
+
+        <div class="login-form__image">
+          <img src="https://static.vecteezy.com/ti/fotos-gratis/t2/72227979-uma-dourado-retriever-cachorro-e-uma-gengibre-gato-estao-aconchegado-acima-dormindo-juntos-em-uma-de-madeira-superficie-foto.jpg" alt="Cão e gato a dormir juntos">
         </div>
 
-        <form class="login-form__body" id="login-form">
-          <ui-input
-            name="email"
-            type="email"
-            label="E-mail"
-            placeholder="seu@email.com"
-          ></ui-input>
+        <div class="login-form__content">
 
-          <ui-input
-            name="password"
-            type="password"
-            label="Senha"
-            placeholder="••••••••"
-          ></ui-input>
+          <div class="login-form__header">
+            <h2 class="login-form__title">Entrar</h2>
+            <p class="login-form__subtitle">Bem-vindo de volta ao Instapet</p>
+          </div>
 
-          <ui-button text="Entrar" class="login-form__submit"></ui-button>
-        </form>
+          <form class="login-form__body" id="login-form" novalidate>
 
-        <p class="login-form__footer">
-          Não tem uma conta? <a class="login-form__link" href="/pages/register.html">Cadastre-se</a>
-        </p>
-      </div>
-    `;
+            <div class="ui-input" id="lf-field-email">
+              <label class="ui-input__label" for="lf-email">E-mail</label>
+              <input class="ui-input__field" id="lf-email" name="email" type="email" placeholder="seu@email.com" autocomplete="email">
+              <span class="ui-input__error" hidden></span>
+            </div>
 
-    this._formData = { email: '', password: '' };
+            <div class="ui-input" id="lf-field-password">
+              <label class="ui-input__label" for="lf-password">Senha</label>
+              <input class="ui-input__field" id="lf-password" name="password" type="password" placeholder="••••••••" autocomplete="current-password">
+              <span class="ui-input__error" hidden></span>
+            </div>
 
-    this.addEventListener('ui-input', (e) => {
-      this._formData[e.detail.name] = e.detail.value;
+            <p class="login-form__error" id="lf-error" hidden></p>
+
+            <button type="submit" class="lf-submit-btn">Entrar</button>
+
+          </form>
+
+          <p class="login-form__footer">
+            Não tem uma conta? <a class="login-form__link" href="/pages/register.html">Cadastre-se</a>
+          </p>
+
+        </div>
+      </div>`;
+
+    this._submitting = false;
+
+    this.querySelectorAll('.ui-input__field').forEach(input => {
+      input.addEventListener('input', () => this._clearFieldError(input.name));
     });
 
     this.querySelector('#login-form').addEventListener('submit', (e) => {
       e.preventDefault();
       this._handleSubmit();
     });
-
-    this.querySelector('.login-form__submit').addEventListener('click', () => {
-      this._handleSubmit();
-    });
   }
 
-  _handleSubmit() {
-    this.dispatchEvent(new CustomEvent('login-submit', {
-      detail: { ...this._formData },
-      bubbles: true,
-      composed: true,
-    }));
+  _setError(name, msg) {
+    const field = this.querySelector(`#lf-field-${name}`);
+    const input = this.querySelector(`#lf-${name}`);
+    if (!field || !input) return;
+    field.classList.add('ui-input--error');
+    input.style.borderColor = '#c0392b';
+    input.style.background = '#fff5f5';
+    const span = field.querySelector('.ui-input__error');
+    if (span) { span.textContent = msg; span.hidden = false; }
+  }
+
+  _clearFieldError(name) {
+    const field = this.querySelector(`#lf-field-${name}`);
+    const input = this.querySelector(`#lf-${name}`);
+    if (!field || !input) return;
+    field.classList.remove('ui-input--error');
+    input.style.borderColor = '';
+    input.style.background = '';
+    const span = field.querySelector('.ui-input__error');
+    if (span) { span.textContent = ''; span.hidden = true; }
+  }
+
+  _clearAllErrors() {
+    ['email', 'password'].forEach(n => this._clearFieldError(n));
+    const el = this.querySelector('#lf-error');
+    if (el) { el.textContent = ''; el.hidden = true; }
+  }
+
+  _showFormError(msg) {
+    const el = this.querySelector('#lf-error');
+    if (!el) return;
+    el.textContent = msg;
+    el.hidden = false;
+  }
+
+  async _handleSubmit() {
+    if (this._submitting) return;
+    this._clearAllErrors();
+
+    const email    = this.querySelector('#lf-email')?.value.trim() ?? '';
+    const password = this.querySelector('#lf-password')?.value ?? '';
+
+    if (!email) { this._setError('email', 'Campo obrigatório'); return; }
+    if (!password) { this._setError('password', 'Campo obrigatório'); return; }
+
+    this._submitting = true;
+    const btn = this.querySelector('.lf-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'A entrar...'; }
+
+    try {
+      const data = await login({ email, password });
+      localStorage.setItem('token', data.access_token);
+      window.location.href = '/pages/feed.html';
+    } catch (err) {
+      if (err.status === 401) {
+        this._setError('email', 'Email ou senha incorrectos');
+        this._setError('password', 'Email ou senha incorrectos');
+      } else {
+        this._showFormError('Erro ao entrar. Tenta novamente.');
+      }
+    } finally {
+      this._submitting = false;
+      if (btn) { btn.disabled = false; btn.textContent = 'Entrar'; }
+    }
   }
 }
 

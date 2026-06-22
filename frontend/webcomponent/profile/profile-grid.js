@@ -20,8 +20,12 @@ export class ProfileGrid extends HTMLElement {
     this.innerHTML = `
       <div class="profile-grid">
         <nav class="profile-grid__tabs">
-          <button class="profile-grid__tab profile-grid__tab--active" data-tab="pets">🐾 PETS</button>
-          ${isOwnProfile ? `<button class="profile-grid__tab" data-tab="saved">📌 SAVED</button>` : ''}
+          <button class="profile-grid__tab profile-grid__tab--active" data-tab="pets">
+            <span class="material-symbols-outlined">pets</span> PETS
+          </button>
+          ${isOwnProfile ? `<button class="profile-grid__tab" data-tab="saved">
+            <span class="material-symbols-outlined">bookmark</span> SAVED
+          </button>` : ''}
         </nav>
 
         <div class="profile-grid__photos" id="profile-grid-photos"></div>

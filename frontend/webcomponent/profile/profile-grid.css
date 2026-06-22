@@ -1,13 +1,13 @@
 .profile-grid {
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(30, 20, 10, 0.06);
+  box-shadow: var(--shadow-sm);
 }
 
 .profile-grid__tabs {
   display: flex;
-  border-bottom: 1.5px solid #E8DDD4;
+  border-bottom: 1.5px solid var(--border);
 }
 
 .profile-grid__tab {
@@ -20,32 +20,42 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.07em;
-  color: #9A9A9A;
+  color: var(--text-muted);
   cursor: pointer;
   transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+}
+
+.profile-grid__tab .material-symbols-outlined {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .profile-grid__tab:hover {
-  color: #5B8A6B;
+  color: var(--color-primary);
 }
 
 .profile-grid__tab--active {
-  color: #5B8A6B;
-  border-bottom-color: #5B8A6B;
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
 }
 
 .profile-grid__photos {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
-  background: #E8DDD4;
+  background: var(--border);
 }
 
 .profile-grid__item {
   aspect-ratio: 1;
   overflow: hidden;
   display: block;
-  background: #F0E8E0;
+  background: var(--subtle-bg);
 }
 
 .profile-grid__img {
@@ -66,31 +76,31 @@
   padding: 56px 24px;
   text-align: center;
   font-size: 14px;
-  color: #9A9A9A;
-  background: #fff;
+  color: var(--text-muted);
+  background: var(--surface);
 }
 
 .profile-grid__footer {
   padding: 18px;
   text-align: center;
-  background: #fff;
-  border-top: 1.5px solid #E8DDD4;
+  background: var(--surface);
+  border-top: 1.5px solid var(--border);
 }
 
 .profile-grid__more-btn {
   padding: 8px 28px;
   background: transparent;
-  border: 1.5px solid #D8CFC7;
-  border-radius: 999px;
+  border: 1.5px solid var(--border-md);
+  border-radius: var(--radius-full);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #9A9A9A;
+  color: var(--text-muted);
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
 }
 
 .profile-grid__more-btn:hover {
-  border-color: #5B8A6B;
-  color: #5B8A6B;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }

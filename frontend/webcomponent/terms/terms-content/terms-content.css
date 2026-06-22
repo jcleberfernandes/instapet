@@ -41,3 +41,14 @@
   line-height: 1.7;
   margin: 0;
 }
+
+@media (max-width: 600px) {
+  .terms-content {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .terms-content__title {
+    font-size: 18px;
+  }
+}

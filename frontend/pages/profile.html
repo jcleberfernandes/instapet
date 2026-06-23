@@ -286,6 +286,10 @@
     const usernameParam = params.get('user');
     const isOwnProfile  = !usernameParam;
 
+    if (isOwnProfile && !localStorage.getItem('token')) {
+      window.location.replace('/pages/login.html');
+    }
+
     // ── Modal de edição ───────────────────────────────────────────
     const modal           = document.getElementById('edit-modal');
     const editForm        = document.getElementById('edit-form');

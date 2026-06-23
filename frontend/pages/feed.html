@@ -37,6 +37,10 @@
     import { getPosts, likePost, unlikePost, savePost, unsavePost, createPost } from '../services/posts.js';
     import { getMe } from '../services/users.js';
 
+    if (!localStorage.getItem('token')) {
+      window.location.replace('/pages/login.html');
+    }
+
     const feedContainer         = document.getElementById('feed-container');
     const leftSidebarContainer  = document.getElementById('left-sidebar-container');
 
@@ -52,7 +56,13 @@
         sidebar.setAttribute('likes',        currentUser.like_count ?? '0');
         sidebar.setAttribute('followers',    currentUser.follower_count ?? '0');
         sidebar.setAttribute('following',    currentUser.following_count ?? '0');
-      } catch { /* sem sessão, mostra defaults */ }
+      } catch (err) {
+        if (err.status === 401) {
+          localStorage.removeItem('token');
+          window.location.replace('/pages/login.html');
+          return;
+        }
+      }
       leftSidebarContainer.appendChild(sidebar);
     }
 

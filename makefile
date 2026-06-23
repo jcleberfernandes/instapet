@@ -1,10 +1,19 @@
 
-.PHONY: start up down build restart logs clean sync seed
+.PHONY: start up down build restart logs clean sync seed gen-env
 
 sync:
 	cd backend && uv sync
 
+gen-env:
+	@if [ ! -f backend/.env ]; then \
+		echo "JWT_SECRET=$$(openssl rand -hex 32)" > backend/.env; \
+		echo "⚙️   .env criado em backend/.env com JWT_SECRET aleatório"; \
+	else \
+		echo "⚙️   .env já existe, a manter os valores actuais"; \
+	fi
+
 start:
+	$(MAKE) gen-env
 	cd backend && uv sync
 	@if [ -d backend/instapet.db ]; then rm -rf backend/instapet.db; fi
 	@touch backend/instapet.db

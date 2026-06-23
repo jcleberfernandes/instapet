@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 import bcrypt
+import os
 
-SECRET_KEY = "c3d0eeeb3eb791a842615d1f929afecb4e94c02cbf96639875ee7a1f3d6d07bd"
+SECRET_KEY = os.environ["JWT_SECRET"]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

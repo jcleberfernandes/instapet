@@ -1,4 +1,5 @@
 import { avatarHTML } from '../ui/avatar.js';
+import { escapeHtml } from '../ui/escape.js';
 
 const link = document.createElement('link');
 link.rel = 'stylesheet';
@@ -7,10 +8,10 @@ document.head.appendChild(link);
 
 export class ProfileHeader extends HTMLElement {
   connectedCallback() {
-    const username     = this.getAttribute('username') || '';
-    const displayName  = this.getAttribute('display-name') || username;
+    const username     = escapeHtml(this.getAttribute('username') || '');
+    const displayName  = escapeHtml(this.getAttribute('display-name') || username);
     const avatar       = this.getAttribute('avatar') || '';
-    const bio          = this.getAttribute('bio') || '';
+    const bio          = escapeHtml(this.getAttribute('bio') || '');
     const likes        = this.getAttribute('likes') || '0';
     const followers    = this.getAttribute('followers') || '0';
     const following    = this.getAttribute('following') || '0';

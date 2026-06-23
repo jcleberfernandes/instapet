@@ -1,4 +1,5 @@
 import { avatarHTML } from '../../ui/avatar.js';
+import { escapeHtml } from '../../ui/escape.js';
 
 const link = document.createElement('link');
 link.rel = 'stylesheet';
@@ -26,7 +27,7 @@ export class PostDetail extends HTMLElement {
         <header class="post-detail__header">
           ${avatarHTML(username, avatar, 'post-detail__avatar')}
           <div class="post-detail__header-info">
-            <a class="post-detail__username" href="/pages/profile.html?user=${username}">@${username}</a>
+            <a class="post-detail__username" href="/pages/profile.html?user=${escapeHtml(username)}">@${escapeHtml(username)}</a>
             ${time ? `<span class="post-detail__time">${time}</span>` : ''}
           </div>
           ${mine ? `
@@ -83,8 +84,8 @@ export class PostDetail extends HTMLElement {
           <div class="post-detail__caption-wrap">
             ${caption ? `
               <p class="post-detail__caption">
-                <a class="post-detail__caption-user" href="/pages/profile.html?user=${username}">@${username}</a>
-                <span class="post-detail__caption-text">${caption}</span>
+                <a class="post-detail__caption-user" href="/pages/profile.html?user=${escapeHtml(username)}">@${escapeHtml(username)}</a>
+                <span class="post-detail__caption-text">${escapeHtml(caption)}</span>
               </p>
             ` : ''}
             ${tags.length ? `<div class="post-detail__tags">${tags.map(t => `<a class="post-detail__tag" href="/pages/search.html?q=${encodeURIComponent(t)}">#${t}</a>`).join('')}</div>` : ''}
@@ -188,8 +189,8 @@ export class PostDetail extends HTMLElement {
     const wrap = this.querySelector('.post-detail__caption-wrap');
     wrap.innerHTML = caption ? `
       <p class="post-detail__caption">
-        <a class="post-detail__caption-user" href="/pages/profile.html?user=${username}">@${username}</a>
-        <span class="post-detail__caption-text">${caption}</span>
+        <a class="post-detail__caption-user" href="/pages/profile.html?user=${escapeHtml(username)}">@${escapeHtml(username)}</a>
+        <span class="post-detail__caption-text">${escapeHtml(caption)}</span>
       </p>
     ` : '';
   }

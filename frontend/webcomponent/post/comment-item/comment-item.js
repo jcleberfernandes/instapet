@@ -1,4 +1,5 @@
 import { avatarHTML } from '../../ui/avatar.js';
+import { escapeHtml } from '../../ui/escape.js';
 
 const link = document.createElement('link');
 link.rel = 'stylesheet';
@@ -7,10 +8,10 @@ document.head.appendChild(link);
 
 export class CommentItem extends HTMLElement {
   connectedCallback() {
-    const username    = this.getAttribute('username') || '';
-    const displayName = this.getAttribute('display-name') || username;
+    const username    = escapeHtml(this.getAttribute('username') || '');
+    const displayName = escapeHtml(this.getAttribute('display-name') || username);
     const avatar      = this.getAttribute('avatar') || '';
-    const content     = this.getAttribute('content') || '';
+    const content     = escapeHtml(this.getAttribute('content') || '');
     const time        = this.getAttribute('time') || '';
     const mine        = this.getAttribute('mine') === 'true';
     const commentId   = this.getAttribute('comment-id') || '';

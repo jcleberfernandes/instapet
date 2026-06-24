@@ -20,6 +20,13 @@
 
     <aside class="sidebar">
       <feed-sidebar-right></feed-sidebar-right>
+      <div class="feed-filter-widget">
+        <label class="feed-filter-label" for="feed-filter-select">Mostrar</label>
+        <select class="feed-filter-select" id="feed-filter-select">
+          <option value="all">Todos os posts</option>
+          <option value="following">A seguir</option>
+        </select>
+      </div>
     </aside>
 
   </div>
@@ -41,13 +48,20 @@
       window.location.replace('/pages/login.html');
     }
 
-    const feedContainer         = document.getElementById('feed-container');
-    const leftSidebarContainer  = document.getElementById('left-sidebar-container');
+    const feedContainer        = document.getElementById('feed-container');
+    const leftSidebarContainer = document.getElementById('left-sidebar-container');
+    const filterSelect         = document.getElementById('feed-filter-select');
 
     let currentUser   = null;
     let currentFilter = 'all';
 
+    filterSelect.addEventListener('change', async () => {
+      currentFilter = filterSelect.value;
+      await loadFeed();
+    });
+
     async function loadSidebar() {
+      leftSidebarContainer.innerHTML = '';
       const sidebar = document.createElement('feed-sidebar-left');
       try {
         currentUser = await getMe();
@@ -85,30 +99,11 @@
       return card;
     }
 
-    function buildFeedHeader() {
-      const header = document.createElement('div');
-      header.className = 'feed-header';
-      header.innerHTML = `
-        <select class="feed-filter-select" aria-label="Filtrar feed">
-          <option value="all">Todos os posts</option>
-          <option value="following">A seguir</option>
-        </select>
-      `;
-      const select = header.querySelector('.feed-filter-select');
-      select.value = currentFilter;
-      select.addEventListener('change', async () => {
-        currentFilter = select.value;
-        await loadFeed();
-      });
-      return header;
-    }
-
     async function loadFeed() {
       try {
         const posts = currentFilter === 'following' ? await getFeedPosts() : await getPosts();
 
         feedContainer.innerHTML = '';
-        feedContainer.appendChild(buildFeedHeader());
 
         const form = document.createElement('post-form');
         if (currentUser) {
@@ -141,9 +136,10 @@
 
         const card = buildPostCard({
           ...newPost,
-          author_username: currentUser?.username ?? '',
-          liked_by_me: false,
-          saved_by_me: false,
+          author_username:        currentUser?.username ?? '',
+          author_followed_by_me:  false,
+          liked_by_me:            false,
+          saved_by_me:            false,
         });
 
         const form = feedContainer.querySelector('post-form');
@@ -158,7 +154,8 @@
       try {
         if (e.detail.followed) await followUser(e.detail.username);
         else await unfollowUser(e.detail.username);
-        sessionStorage.setItem('feed-stale', '1');
+        // update "A seguir" counter in left sidebar immediately
+        document.dispatchEvent(new CustomEvent('sidebar-follow-change', { detail: { followed: e.detail.followed } }));
       } catch (err) { console.error('follow error', err); }
     });
 
@@ -185,18 +182,16 @@
       }
     });
 
+    // on bfcache navigation, always reload fresh data
     window.addEventListener('pageshow', async (e) => {
-      const stale = sessionStorage.getItem('feed-stale') === '1';
-      if (e.persisted || stale) {
-        sessionStorage.removeItem('feed-stale');
-        leftSidebarContainer.innerHTML = '';
-        await loadSidebar();
-        await loadFeed();
-      }
+      if (!e.persisted) return;
+      sessionStorage.removeItem('feed-stale');
+      await loadSidebar();
+      await loadFeed();
     });
 
     await loadSidebar();
-    loadFeed();
+    await loadFeed();
   </script>
 
 </body>

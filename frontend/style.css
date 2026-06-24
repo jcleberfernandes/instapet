@@ -137,10 +137,25 @@ body {
   color: #D05050;
 }
 
-.feed-header {
+.feed-filter-widget {
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 12px;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.feed-filter-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 
 .feed-filter-select {
@@ -148,12 +163,13 @@ body {
   font-weight: 600;
   font-family: inherit;
   color: var(--text);
-  background: var(--surface);
+  background: var(--input-bg, var(--subtle-bg));
   border: 1.5px solid var(--border-md);
   border-radius: var(--radius-sm);
-  padding: 6px 10px;
+  padding: 5px 8px;
   cursor: pointer;
   outline: none;
+  flex: 1;
   transition: border-color 0.15s;
 }
 

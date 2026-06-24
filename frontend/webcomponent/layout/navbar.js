@@ -180,6 +180,7 @@ class NavBar extends HTMLElement {
         const badge = this.querySelector('.navbar__notif-badge');
         if (badge) badge.hidden = true;
         await this._fetchNotifications();
+        if (badge) badge.hidden = true;
         this.querySelectorAll('.navbar__notif-item--unread').forEach(el =>
           el.classList.remove('navbar__notif-item--unread')
         );

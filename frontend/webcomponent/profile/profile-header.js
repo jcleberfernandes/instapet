@@ -1,5 +1,6 @@
 import { avatarHTML } from '../ui/avatar.js';
 import { escapeHtml } from '../ui/escape.js';
+import { followUser, unfollowUser } from '../../services/users.js';
 
 const link = document.createElement('link');
 link.rel = 'stylesheet';
@@ -76,19 +77,42 @@ export class ProfileHeader extends HTMLElement {
     if (!editable) {
       let followed = followedByMe;
       const btn = this.querySelector('.profile-header__follow-btn');
-      const followersValueEl = this.querySelectorAll('.profile-header__stat-value')[1];
-      btn.addEventListener('click', () => {
+      const followersEl = this.querySelectorAll('.profile-header__stat-value')[1];
+
+      btn.addEventListener('click', async () => {
+        if (btn.disabled) return;
+
+        const wasFollowed = followed;
         followed = !followed;
+
+        // optimistic update
+        btn.disabled = true;
         btn.textContent = followed ? 'A seguir' : 'Seguir';
         btn.classList.toggle('profile-header__follow-btn--following', followed);
-        if (followersValueEl) {
-          const current = parseInt(followersValueEl.textContent || '0');
-          followersValueEl.textContent = Math.max(0, current + (followed ? 1 : -1));
+        if (followersEl) {
+          const current = parseInt(followersEl.textContent || '0');
+          followersEl.textContent = Math.max(0, current + (followed ? 1 : -1));
         }
-        this.dispatchEvent(new CustomEvent('profile-follow', {
-          bubbles: true,
-          detail: { username, followed },
-        }));
+
+        try {
+          if (followed) await followUser(username);
+          else await unfollowUser(username);
+          this.dispatchEvent(new CustomEvent('profile-follow', {
+            bubbles: true,
+            detail: { username, followed },
+          }));
+        } catch {
+          // rollback
+          followed = wasFollowed;
+          btn.textContent = followed ? 'A seguir' : 'Seguir';
+          btn.classList.toggle('profile-header__follow-btn--following', followed);
+          if (followersEl) {
+            const current = parseInt(followersEl.textContent || '0');
+            followersEl.textContent = Math.max(0, current + (followed ? 1 : -1));
+          }
+        } finally {
+          btn.disabled = false;
+        }
       });
     }
   }

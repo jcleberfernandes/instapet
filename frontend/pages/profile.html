@@ -616,12 +616,8 @@
     // ── Perfil ───────────────────────────────────────────────────
     document.addEventListener('profile-edit-open', (e) => openModal(e.detail));
 
-    document.addEventListener('profile-follow', async (e) => {
-      try {
-        if (e.detail.followed) await followUser(e.detail.username);
-        else await unfollowUser(e.detail.username);
-        sessionStorage.setItem('feed-stale', '1');
-      } catch (err) { console.error('Erro ao seguir/deixar de seguir', err); }
+    document.addEventListener('profile-follow', (e) => {
+      sessionStorage.setItem('feed-stale', '1');
     });
 
     async function loadProfile() {

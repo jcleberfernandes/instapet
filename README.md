@@ -42,17 +42,21 @@ This project is the functional MVP of the **InstaPet** concept developed during 
 
 ## Features
 
-- **Authentication** — register, login, JWT-protected routes with automatic redirect on expiry
-- **Feed** — chronological post feed, post form inline, tag filtering via right sidebar
-- **Posts** — create posts with text, hashtags, and image upload
-- **Likes & Saves** — like or bookmark any post; saved posts accessible from the profile
+- **Authentication** — register, login, JWT-protected routes, password show/hide toggle
+- **Feed** — chronological feed with filter widget (all posts vs. following only) and explore (posts from unfollowed users)
+- **Posts** — create posts with caption, hashtags, and required image upload; edit and delete own posts
+- **Likes & Saves** — like or bookmark any post; saved posts sorted by save date and accessible from profile
 - **Comments** — add and delete comments per post
-- **Profiles** — avatar, bio, follower/following counts, post grid
-- **Follow system** — follow/unfollow users; sidebar updates live without page reload
-- **Tag filtering** — filter the feed by hashtag; right sidebar shows trending tags
-- **Search** — search users by username
+- **Profiles** — avatar, bio, Gostos/Seguidores/A seguir counters, post grid with tabs (posts / saved)
+- **Follow system** — follow/unfollow from feed postcards, search, and profile; optimistic counter updates with rollback
+- **Followers/following popup** — click follower or following count to open a modal list of users with inline follow buttons
+- **Notifications** — real-time badge on navbar; triggered by likes, comments, and follows; auto-marked as read on panel open; clear all
+- **Hashtag links** — `#tag` in any caption becomes a clickable link to search results
+- **Tag filtering** — right sidebar shows trending tags; click to filter the feed
+- **Search** — search posts by hashtag; follow users directly from results
+- **404 page** — custom branded page for unknown routes
 - **Image uploads** — JPEG/PNG/GIF/WebP, max 10 MB, served as static files
-- **Terms & FAQ** — dedicated informational page
+- **Terms & FAQ** — dedicated page in Portuguese with accordion FAQ
 
 ---
 
@@ -64,15 +68,15 @@ instapet/
 │   ├── app/
 │   │   ├── auth/          # JWT creation, password hashing, auth dependencies
 │   │   ├── database/      # DB initialisation and seed script
-│   │   ├── models/        # SQLModel tables: User, Post, Like, Save, Comment, Follow, Tag, PostTag
-│   │   ├── routers/       # FastAPI routers: auth, posts, users, upload
+│   │   ├── models/        # SQLModel tables: User, Post, Like, Save, Comment, Follow, Tag, PostTag, Notification
+│   │   ├── routers/       # FastAPI routers: auth, posts, users, upload, notifications
 │   │   └── schemas/       # Pydantic request/response schemas
 │   ├── imgs/              # Uploaded images served as static files at /imgs/
 │   ├── .env               # Environment variables (not committed — see .env.example)
 │   └── Dockerfile
 ├── frontend/
-│   ├── pages/             # HTML pages: feed, login, register, profile, post, search, terms
-│   ├── services/          # JS API client modules: api, auth, posts, users, upload
+│   ├── pages/             # HTML pages: feed, login, register, profile, post, search, terms, 404
+│   ├── services/          # JS API client modules: api, auth, posts, users, upload, notifications
 │   ├── webcomponent/      # Custom Web Components: navbar, footer, postcard, forms, sidebars…
 │   └── Dockerfile
 ├── docker-compose.yml
@@ -177,10 +181,12 @@ clean:
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| GET | `/posts/` | optional | List posts (filterable by `?tag=`, `?skip=`, `?limit=`) |
+| GET | `/posts/` | optional | List all posts (filterable by `?tag=`, `?skip=`, `?limit=`) |
 | POST | `/posts/` | required | Create post |
-| GET | `/posts/tags` | — | List top trending tags |
-| GET | `/posts/saved` | required | List posts saved by the current user |
+| GET | `/posts/feed` | required | Posts from followed users only |
+| GET | `/posts/explore` | required | Posts from unfollowed users |
+| GET | `/posts/tags` | — | Top trending tags |
+| GET | `/posts/saved` | required | Posts saved by the current user (sorted by save date) |
 | GET | `/posts/{id}` | optional | Get a single post |
 | PATCH | `/posts/{id}` | required | Edit own post |
 | DELETE | `/posts/{id}` | required | Delete own post |
@@ -200,8 +206,18 @@ clean:
 | GET | `/users/me` | required | Get own profile |
 | PATCH | `/users/me` | required | Update own profile |
 | GET | `/users/{username}` | optional | Get user profile by username |
+| GET | `/users/{username}/followers` | optional | List followers of a user |
+| GET | `/users/{username}/following` | optional | List users followed by a user |
 | POST | `/users/{username}/follow` | required | Follow a user |
 | DELETE | `/users/{username}/follow` | required | Unfollow a user |
+
+**Notifications**
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/notifications` | required | List own notifications (latest 30) |
+| POST | `/notifications/read-all` | required | Mark all notifications as read |
+| DELETE | `/notifications/all` | required | Delete all notifications |
 
 **Upload**
 

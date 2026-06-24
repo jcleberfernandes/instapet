@@ -77,6 +77,14 @@
   color: #E07B54;
 }
 
+/* Foto + Tags na mesma linha */
+.post-form__secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-items: start;
+}
+
 /* File picker */
 .post-form__file-wrap {
   display: flex;
@@ -229,5 +237,9 @@
   .post-form {
     padding: 14px;
     border-radius: 12px;
+  }
+
+  .post-form__secondary {
+    grid-template-columns: 1fr;
   }
 }

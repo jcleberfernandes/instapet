@@ -555,7 +555,16 @@
     document.getElementById('users-modal-backdrop').addEventListener('click', closeUsersModal);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeUsersModal(); });
 
-    function buildUserItem(u, loggedInUsername) {
+    function getHeaderStatEl(index) {
+      return document.querySelectorAll('#profile-header-container .profile-header__stat-value')[index];
+    }
+
+    function nudgeHeaderStat(index, delta) {
+      const el = getHeaderStatEl(index);
+      if (el) el.textContent = Math.max(0, parseInt(el.textContent || '0') + delta);
+    }
+
+    function buildUserItem(u, loggedInUsername, profileUsername) {
       const isMe = loggedInUsername && u.username === loggedInUsername;
       const initials = (u.display_name || u.username).slice(0, 1).toUpperCase();
       const avatar = u.avatar_url
@@ -577,14 +586,34 @@
         let followed = u.followed_by_me;
         const btn = li.querySelector('.users-modal__follow-btn');
         btn.addEventListener('click', async () => {
+          if (btn.disabled) return;
+          const wasFollowed = followed;
+          followed = !followed;
+          const delta = followed ? 1 : -1;
+
+          // optimistic update
+          btn.disabled = true;
+          btn.textContent = followed ? 'A seguir' : 'Seguir';
+          btn.classList.toggle('users-modal__follow-btn--following', followed);
+
+          // sync header counters
+          if (u.username === profileUsername) nudgeHeaderStat(1, delta); // Seguidores do perfil
+          if (loggedInUsername === profileUsername) nudgeHeaderStat(2, delta); // A seguir (perfil próprio)
+
           try {
-            if (followed) await unfollowUser(u.username);
-            else await followUser(u.username);
-            followed = !followed;
+            if (followed) await followUser(u.username);
+            else await unfollowUser(u.username);
+            sessionStorage.setItem('feed-stale', '1');
+          } catch {
+            // rollback
+            followed = wasFollowed;
             btn.textContent = followed ? 'A seguir' : 'Seguir';
             btn.classList.toggle('users-modal__follow-btn--following', followed);
-            sessionStorage.setItem('feed-stale', '1');
-          } catch {}
+            if (u.username === profileUsername) nudgeHeaderStat(1, -delta);
+            if (loggedInUsername === profileUsername) nudgeHeaderStat(2, -delta);
+          } finally {
+            btn.disabled = false;
+          }
         });
       }
       return li;
@@ -605,7 +634,7 @@
           usersModalList.innerHTML = '<li class="users-modal__empty">Nenhum utilizador.</li>';
           return;
         }
-        users.forEach(u => usersModalList.appendChild(buildUserItem(u, loggedInUsername)));
+        users.forEach(u => usersModalList.appendChild(buildUserItem(u, loggedInUsername, username)));
       } catch {
         usersModalList.innerHTML = '<li class="users-modal__empty">Erro ao carregar.</li>';
       }

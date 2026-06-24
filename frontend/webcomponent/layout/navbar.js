@@ -32,12 +32,15 @@ function notifIcon(type) {
 class NavBar extends HTMLElement {
   async connectedCallback() {
     this._render('', '', '');
-    try {
-      const me = await getMe();
-      this._render(me.display_name || me.username, me.username, me.avatar_url || '');
-      this._startPolling();
-    } catch {
-      // not authenticated
+    this._showCachedBadge();
+
+    const [me] = await Promise.allSettled([getMe(), this._fetchNotifications()]);
+
+    if (me.status === 'fulfilled') {
+      const { display_name, username, avatar_url } = me.value;
+      this._render(display_name || username, username, avatar_url || '');
+      this._showCachedBadge();
+      this._pollTimer = setInterval(() => this._fetchNotifications(), 30000);
     }
   }
 
@@ -45,14 +48,19 @@ class NavBar extends HTMLElement {
     clearInterval(this._pollTimer);
   }
 
-  _startPolling() {
-    this._fetchNotifications();
-    this._pollTimer = setInterval(() => this._fetchNotifications(), 30000);
+  _showCachedBadge() {
+    const cached = parseInt(localStorage.getItem('notif_unread') || '0');
+    const badge = this.querySelector('.navbar__notif-badge');
+    if (!badge) return;
+    badge.textContent = cached > 9 ? '9+' : cached;
+    badge.hidden = cached === 0;
   }
 
   async _fetchNotifications() {
     try {
       const notifs = await getNotifications();
+      const unread = notifs.filter(n => !n.read).length;
+      localStorage.setItem('notif_unread', unread);
       this._updateBadge(notifs);
       this._updatePanel(notifs);
     } catch { /* ignore */ }
@@ -166,6 +174,7 @@ class NavBar extends HTMLElement {
       notifPanel.hidden = isOpen;
       if (!isOpen) {
         await markAllRead().catch(() => {});
+        localStorage.setItem('notif_unread', '0');
         const badge = this.querySelector('.navbar__notif-badge');
         if (badge) badge.hidden = true;
         this.querySelectorAll('.navbar__notif-item--unread').forEach(el => {
@@ -177,6 +186,7 @@ class NavBar extends HTMLElement {
     this.querySelector('.navbar__notif-read-all').addEventListener('click', async (e) => {
       e.stopPropagation();
       await markAllRead().catch(() => {});
+      localStorage.setItem('notif_unread', '0');
       const badge = this.querySelector('.navbar__notif-badge');
       if (badge) badge.hidden = true;
       this.querySelectorAll('.navbar__notif-item--unread').forEach(el => {

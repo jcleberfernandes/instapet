@@ -170,13 +170,12 @@ class NavBar extends HTMLElement {
     `;
 
     // Bell toggle
-    const notifBtn   = this.querySelector('.navbar__notif-btn');
-    const notifPanel = this.querySelector('.navbar__notif-panel');
-    notifBtn.addEventListener('click', async (e) => {
+    this.querySelector('.navbar__notif-btn').addEventListener('click', async (e) => {
       e.stopPropagation();
-      const isOpen = !notifPanel.hidden;
-      notifPanel.hidden = isOpen;
-      if (!isOpen) {
+      const panel = this.querySelector('.navbar__notif-panel');
+      const opening = panel.hidden;
+      panel.hidden = !opening;
+      if (opening) {
         await this._fetchNotifications();
       }
     });
@@ -213,7 +212,8 @@ class NavBar extends HTMLElement {
       if (!this.contains(e.target)) {
         const dd = this.querySelector('.navbar__dropdown');
         if (dd) dd.hidden = true;
-        if (notifPanel) notifPanel.hidden = true;
+        const np = this.querySelector('.navbar__notif-panel');
+        if (np) np.hidden = true;
       }
     }, { capture: true });
   }

@@ -38,12 +38,22 @@ def mark_all_read(
     session: Session = Depends(get_db),
 ):
     notifs = session.exec(
-        select(Notification).where(
-            Notification.user_id == current_user.id,
-            Notification.read == False,
-        )
+        select(Notification).where(Notification.user_id == current_user.id)
     ).all()
     for n in notifs:
         n.read = True
         session.add(n)
+    session.commit()
+
+
+@router.delete("/all", status_code=204)
+def delete_all_notifications(
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_db),
+):
+    notifs = session.exec(
+        select(Notification).where(Notification.user_id == current_user.id)
+    ).all()
+    for n in notifs:
+        session.delete(n)
     session.commit()

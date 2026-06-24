@@ -1,6 +1,6 @@
 import { avatarHTML } from '../ui/avatar.js';
 import { getMe } from '../../services/users.js';
-import { getNotifications, markAllRead } from '../../services/notifications.js';
+import { getNotifications, markAllRead, deleteAllNotifications } from '../../services/notifications.js';
 
 const link = document.createElement('link');
 link.rel = 'stylesheet';
@@ -130,7 +130,7 @@ class NavBar extends HTMLElement {
             <div class="navbar__notif-panel" hidden>
               <div class="navbar__notif-header">
                 <span class="navbar__notif-title">Notificações</span>
-                <button class="navbar__notif-read-all">Marcar todas como lidas</button>
+                <button class="navbar__notif-read-all">Limpar tudo</button>
               </div>
               <div class="navbar__notif-list">
                 <p class="navbar__notif-empty">Sem notificações</p>
@@ -186,10 +186,13 @@ class NavBar extends HTMLElement {
       btn.textContent = 'A marcar...';
       btn.disabled = true;
       try {
-        await markAllRead();
+        await deleteAllNotifications();
         localStorage.setItem('notif_unread', '0');
-        await this._fetchNotifications();
-        btn.textContent = 'Todas lidas';
+        const badge = this.querySelector('.navbar__notif-badge');
+        if (badge) badge.hidden = true;
+        const list = this.querySelector('.navbar__notif-list');
+        if (list) list.innerHTML = `<p class="navbar__notif-empty">Sem notificações</p>`;
+        btn.textContent = 'Limpar tudo';
       } catch {
         btn.textContent = 'Erro, tenta novamente';
       }

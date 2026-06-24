@@ -178,18 +178,14 @@ class NavBar extends HTMLElement {
       notifPanel.hidden = isOpen;
       if (!isOpen) {
         await this._fetchNotifications();
-        await markAllRead().catch(() => {});
-        localStorage.setItem('notif_unread', '0');
-        const badge = this.querySelector('.navbar__notif-badge');
-        if (badge) badge.hidden = true;
-        this.querySelectorAll('.navbar__notif-item--unread').forEach(el => {
-          el.classList.remove('navbar__notif-item--unread');
-        });
       }
     });
 
     this.querySelector('.navbar__notif-read-all').addEventListener('click', async (e) => {
       e.stopPropagation();
+      const btn = e.currentTarget;
+      btn.textContent = 'A marcar...';
+      btn.disabled = true;
       await markAllRead().catch(() => {});
       localStorage.setItem('notif_unread', '0');
       const badge = this.querySelector('.navbar__notif-badge');
@@ -197,6 +193,8 @@ class NavBar extends HTMLElement {
       this.querySelectorAll('.navbar__notif-item--unread').forEach(el => {
         el.classList.remove('navbar__notif-item--unread');
       });
+      btn.textContent = 'Todas lidas';
+      btn.disabled = false;
     });
 
     // Avatar dropdown toggle

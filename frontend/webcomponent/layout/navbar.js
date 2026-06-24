@@ -185,14 +185,14 @@ class NavBar extends HTMLElement {
       const btn = e.currentTarget;
       btn.textContent = 'A marcar...';
       btn.disabled = true;
-      await markAllRead().catch(() => {});
-      localStorage.setItem('notif_unread', '0');
-      const badge = this.querySelector('.navbar__notif-badge');
-      if (badge) badge.hidden = true;
-      this.querySelectorAll('.navbar__notif-item--unread').forEach(el => {
-        el.classList.remove('navbar__notif-item--unread');
-      });
-      btn.textContent = 'Todas lidas';
+      try {
+        await markAllRead();
+        localStorage.setItem('notif_unread', '0');
+        await this._fetchNotifications();
+        btn.textContent = 'Todas lidas';
+      } catch {
+        btn.textContent = 'Erro, tenta novamente';
+      }
       btn.disabled = false;
     });
 

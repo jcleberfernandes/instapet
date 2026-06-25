@@ -275,6 +275,18 @@ def delete_post(
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Post não encontrado")
     if post.author_id != current_user.id:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Não podes apagar este post")
+
+    for like in session.exec(select(Like).where(Like.post_id == post_id)).all():
+        session.delete(like)
+    for save in session.exec(select(Save).where(Save.post_id == post_id)).all():
+        session.delete(save)
+    for comment in session.exec(select(Comment).where(Comment.post_id == post_id)).all():
+        session.delete(comment)
+    for pt in session.exec(select(PostTag).where(PostTag.post_id == post_id)).all():
+        session.delete(pt)
+    for notif in session.exec(select(Notification).where(Notification.post_id == post_id)).all():
+        session.delete(notif)
+
     session.delete(post)
     session.commit()
 

@@ -45,6 +45,7 @@ class UserRead(SQLModel):
     created_at: datetime
     follower_count: int = 0
     following_count: int = 0
+    post_count: int = 0
     like_count: int = 0
     followed_by_me: bool = False
 

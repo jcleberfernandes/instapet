@@ -21,6 +21,7 @@ def _enrich_user(user: User, session: Session, current_user_id: int | None = Non
         if current_user_id else False
     )
     user_posts = session.exec(select(Post).where(Post.author_id == user.id)).all()
+    post_count = len(user_posts)
     like_count = sum(
         len(session.exec(select(Like).where(Like.post_id == p.id)).all())
         for p in user_posts
@@ -29,6 +30,7 @@ def _enrich_user(user: User, session: Session, current_user_id: int | None = Non
         **user.model_dump(),
         follower_count=follower_count,
         following_count=following_count,
+        post_count=post_count,
         like_count=like_count,
         followed_by_me=followed_by_me,
     )

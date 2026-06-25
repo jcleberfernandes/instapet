@@ -8,7 +8,8 @@ link.href = new URL('./navbar.css', import.meta.url);
 document.head.appendChild(link);
 
 function timeAgo(dateStr) {
-  const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  const utc = dateStr.endsWith('Z') || dateStr.includes('+') ? dateStr : dateStr + 'Z';
+  const diff = Math.floor((Date.now() - new Date(utc)) / 1000);
   if (diff < 60)   return 'agora';
   if (diff < 3600) return `${Math.floor(diff / 60)}m`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`;

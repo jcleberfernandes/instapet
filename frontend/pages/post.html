@@ -91,6 +91,7 @@
         try {
           const authorData = await getUser(post.author_username);
           authorCardEl.setAttribute('avatar',         authorData.avatar_url ?? '');
+          authorCardEl.setAttribute('posts',          authorData.post_count ?? '0');
           authorCardEl.setAttribute('followers',      authorData.follower_count ?? '0');
           authorCardEl.setAttribute('following',      authorData.following_count ?? '0');
           authorCardEl.setAttribute('followed-by-me', authorData.followed_by_me ? 'true' : 'false');

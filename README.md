@@ -10,7 +10,7 @@ Built as the final project for **Project I — Web Programming**, ETIC_Algarve, 
 
 | Student | Primary responsibilities |
 |---------|--------------------------|
-| **Diogo Silva** | Backend (FastAPI routers, authentication, data models, upload), Docker setup, API design, security hardening |
+| **Diogo Silva** | Backend (FastAPI routers, authentication, data models, upload), Docker setup, API design, security hardening, Frontend (Web Components, feed layout, UI styling, design system)|
 | **Cléber Fernandes** | Frontend (Web Components, feed layout, UI styling, design system), search and profile pages |
 
 Both members contributed to integration, testing, and Git workflow throughout the project.
@@ -20,6 +20,8 @@ Both members contributed to integration, testing, and Git workflow throughout th
 ## Original Design Reference
 
 This project is the functional MVP of the **InstaPet** concept developed during the Web Design module. The original static design (Figma prototype) served as the visual source of truth for layout, colour palette, typography, and component structure throughout development.
+
+**Figma prototype:** [InstaPet — ETIC](https://www.figma.com/design/dWD3WxgGIOKWSLXl5SeXYp/InstaPet-ETIC?node-id=1-13971&t=bGMq0WooFih2My55-1)
 
 ---
 
@@ -69,10 +71,11 @@ instapet/
 │   │   ├── auth/          # JWT creation, password hashing, auth dependencies
 │   │   ├── database/      # DB initialisation and seed script
 │   │   ├── models/        # SQLModel tables: User, Post, Like, Save, Comment, Follow, Tag, PostTag, Notification
-│   │   ├── routers/       # FastAPI routers: auth, posts, users, upload, notifications
-│   │   └── schemas/       # Pydantic request/response schemas
+│   │   ├── routers/       # FastAPI routers: auth, posts, users, likes, saves, comments, upload, notifications
+│   │   ├── schemas/       # Pydantic request/response schemas
+│   │   └── services/      # Business logic helpers: post_service, user_service
 │   ├── imgs/              # Uploaded images served as static files at /imgs/
-│   ├── .env               # Environment variables (not committed — see .env.example)
+│   ├── .env               # Environment variables (not committed — it will be created by "make start")
 │   └── Dockerfile
 ├── frontend/
 │   ├── pages/             # HTML pages: feed, login, register, profile, post, search, terms, 404
@@ -91,12 +94,17 @@ instapet/
 
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose v2
 - `make`
+or
+use the dev container
 
 ### Environment variables
 
-Create `backend/.env` before running:
+`make start` generates `backend/.env` automatically with a random `JWT_SECRET` if the file does not already exist. No manual step is needed.
+
+If you want to set your own secret before the first run:
 
 ```env
+# backend/.env
 JWT_SECRET=change_me_to_a_long_random_string
 ```
 
@@ -107,7 +115,7 @@ JWT_SECRET=change_me_to_a_long_random_string
 git clone https://github.com/SRamoras/instapet.git
 cd instapet
 
-# Build images, start containers, and seed the database with sample data
+# Generate .env (if missing), build images, start containers, seed the database
 make start
 ```
 
@@ -125,8 +133,16 @@ The app will be available at:
 sync:
 	cd backend && uv sync
 
+gen-env:
+	@if [ ! -f backend/.env ]; then \
+		echo "JWT_SECRET=$$(openssl rand -hex 32)" > backend/.env; \
+	fi
+
 start:
+	$(MAKE) gen-env
 	cd backend && uv sync
+	@if [ -d backend/instapet.db ]; then rm -rf backend/instapet.db; fi
+	@touch backend/instapet.db
 	docker compose down --remove-orphans
 	docker compose build --no-cache
 	docker compose up -d
@@ -156,7 +172,8 @@ clean:
 
 | Command | What it does |
 |---------|-------------|
-| `make start` | Fresh build — rebuilds images, starts containers, seeds demo data |
+| `make start` | Fresh build — generates `.env` if missing, wipes DB, rebuilds images, starts containers, seeds demo data |
+| `make gen-env` | Create `backend/.env` with a random `JWT_SECRET` if it does not exist yet |
 | `make up` | Start existing containers without rebuilding |
 | `make down` | Stop containers |
 | `make build` | Rebuild and start |
@@ -238,6 +255,7 @@ Full interactive docs at http://localhost:8000/docs (Swagger UI).
 **Claude Code** (Anthropic) — AI coding assistant used interactively throughout the project via the CLI.
 
 **ChatGPT** (OpenAI) — used for research, concept clarification, and exploring alternative approaches
+
 ### Declaration by area
 
 | Area | Purpose | Rough scope |
@@ -245,10 +263,10 @@ Full interactive docs at http://localhost:8000/docs (Swagger UI).
 | Backend project structure | Scaffolding the FastAPI folder layout (routers/, models/, schemas/, auth/) and wiring the app entry point (`main.py`) | Initial scaffold; manually adjusted throughout |
 | SQLModel data models | First draft of `User`, `Post`, `Like`, `Save`, `Comment`, `Follow`, `Tag`, `PostTag`, `Notification` models and their field types/constraints | AI-drafted, reviewed and corrected by Diogo |
 | JWT authentication | Implementation of `hash_password`, `verify_password`, `create_access_token`, `decode_access_token` in `auth/jwt.py` and the `get_current_user` dependency |  AI-drafted |
-| FastAPI routers | First pass of all CRUD endpoints in `routers/posts.py`, `routers/users.py`, `routers/auth.py`; `_enrich_post` and `_enrich_user` helper pattern | AI-drafted, then debugged and extended manually |
+| FastAPI routers | First pass of all CRUD endpoints in `routers/posts.py`, `routers/users.py`, `routers/auth.py`; `enrich_post` and `enrich_user` helper pattern (now in `services/`) | AI-drafted, then debugged and extended manually |
 | Security hardening | Identifying that `JWT_SECRET` was hardcoded → moved to `os.environ["JWT_SECRET"]`; flagging `innerHTML` XSS risk → replaced with `textContent`/`createElement`; removing debug logs | Identified by Claude, applied and verified by Diogo |
 | Web Components (frontend) | Initial shell of `<post-card>`, `<feed-sidebar-left>`, `<feed-sidebar-right>`, `<post-form>`, `<nav-bar>` and others using the native Web Components API | AI-drafted, styled and adjusted by Cléber |
-| JS service layer | First draft of `services/api.js`, `posts.js`, `users.js`, `upload.js` — thin wrappers around `fetch` | AI-drafted, reviewed and extended by Cléber |
+| JS service layer | First draft of `services/api.js`, `auth.js`, `posts.js`, `users.js`, `upload.js`, `notifications.js` — thin wrappers around `fetch` | AI-drafted, reviewed and extended by Cléber |
 | Custom DOM events | Pattern for inter-component communication (`post-submit`, `post-like`, `post-save`, `sidebar-follow-change`) | Suggested by Claude, implemented and tested manually |
 | Bug fixes | Diagnosing stale-data navigation bug → `feed-stale` sessionStorage flag + `pageshow` handler; follow count live-update without reload | Root cause identified by Claude, fix written and verified manually |
 | Docker & Makefile | `docker-compose.yml` structure, `Dockerfile` for each service, `makefile` targets | AI-drafted, tested and corrected locally |
@@ -256,32 +274,10 @@ Full interactive docs at http://localhost:8000/docs (Swagger UI).
 | README | Drafting and structuring this README, API table, and AI Usage section | AI-drafted, reviewed and edited by both authors |
 | Seed data | First draft of `app/database/seed.py` content — pet usernames, bios, post captions, comments, follow/notification sample data | AI-drafted, reviewed and edited by both authors |
 
-### Declaration by Phase 2 deliverable
-
-> Mapping the AI Usage declaration onto the Phase 2 checklist. AI (Claude Code, ChatGPT) was used to a meaningful degree across every deliverable below; all output was reviewed, corrected, and verified by the authors before being committed.
-
-| Phase 2 deliverable | AI usage |
-|---|---|
-| Final list of pages and user flows derived from the design | AI helped consolidate the Figma design into the final list of pages (auth, feed, profile, post detail, notifications, search) and their user flows; reviewed and adjusted by the authors |
-| Data model: ER diagram covering the main domain entities | AI-drafted the entity-relationship reasoning for `User`, `Post`, `Like`, `Save`, `Comment`, `Follow`, `Tag`, `PostTag`, `Notification` and their relationships; corrected and finalised manually |
-| Initial project created, with models defined and migrations in place | AI scaffolded the backend project (FastAPI instead of Django, see [Tech Stack](#tech-stack)) and drafted the SQLModel models; tables are created via `SQLModel.metadata.create_all`, so no separate migration tool is needed |
-| Working `docker-compose.yml` running at least the app service and the database | AI-drafted `docker-compose.yml` and the `Dockerfile`s for the frontend/backend services; the database is file-based SQLite, so it runs inside the backend container rather than as a separate service |
-| Repository structure, `README.md`, `.env.example`, contribution/workflow note | AI-drafted the folder layout, this README, and `.env.example`; reviewed and edited by both authors |
-| Core pages implemented in HTML/CSS/JS, faithful to the design | AI-drafted the initial Web Components shell (`<post-card>`, `<feed-sidebar-left>`, `<feed-sidebar-right>`, `<post-form>`, `<nav-bar>`, etc.); styled and adjusted by Cléber to match the design |
-| Views, URLs and templates (FastAPI routers/JS service layer) wired up for the main user flows | AI-drafted the FastAPI routers and the JS service layer (`services/api.js`, `posts.js`, `users.js`, `upload.js`) connecting the frontend flows to backend endpoints |
-| CRUD working for the main domain entities | AI-drafted CRUD endpoints in `routers/posts.py`, `routers/users.py`, `routers/auth.py`; debugged and extended manually |
-| Data persisted and retrieved from the database correctly | AI-drafted SQLModel queries and the `_enrich_post`/`_enrich_user` helper pattern; correctness verified manually against the database |
-| `docker compose up` brings the full stack up cleanly from a fresh clone | AI-drafted and iteratively corrected the Docker/Makefile setup until a clean `docker compose up` from a fresh clone was achieved |
-| Feature completeness against the Phase 1 scope | AI used throughout to turn Phase 1 features into working code; scope and prioritisation decisions made by the authors |
-| Input validation and basic error handling | AI suggested Pydantic/SQLModel validation and FastAPI exception-handling patterns; security gaps it flagged (hardcoded JWT secret, `innerHTML` XSS risk) were fixed manually |
-| Responsiveness verified on desktop, tablet and mobile | AI suggested the CSS design tokens and media-query patterns used across components; responsiveness itself was visually verified on multiple breakpoints by Cléber |
-| Documentation (installation, usage, stack overview) finalised | AI-drafted this README, including installation steps, usage instructions, and the stack overview; reviewed and edited by both authors |
-| Recorded product demo and final rehearsal | Not AI-assisted — the demo recording and presentation rehearsal were done by the authors |
-
 ### How AI was used as a learning aid
 
 - Claude was used conversationally: we described what we wanted to build, read and questioned the output, then modified it before committing. Anything we couldn't explain we either researched until we could, or rewrote ourselves.
-- When Claude proposed a pattern we hadn't seen before (e.g., `_enrich_post` helper, `asynccontextmanager` for FastAPI lifespan), we asked it to explain why before accepting the code.
+- When Claude proposed a pattern we hadn't seen before (e.g., `enrich_post` helper in `services/`, `asynccontextmanager` for FastAPI lifespan), we asked it to explain why before accepting the code.
 - Security issues were flagged by Claude during code review prompts — this reinforced understanding of JWT secret management and XSS risks rather than bypassing it.
 - No code was committed with the reasoning "the AI wrote it" — the commit history reflects iterative, understood changes.
 
